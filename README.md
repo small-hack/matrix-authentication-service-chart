@@ -8,7 +8,7 @@ Read through the parameters and modify them locally before installing the chart:
 
 ```bash
 # add the helm repo locally
-helm repo add matrix-authentication-service https://small-hack.github.io/matrix-authentication-service-chart
+helm repo add matrix-authentication-service https://jessebot.github.io/matrix-authentication-service-chart
 
 # downloads the values.yaml locally
 helm show values matrix-authentication-service/matrix-authentication-service > values.yaml
