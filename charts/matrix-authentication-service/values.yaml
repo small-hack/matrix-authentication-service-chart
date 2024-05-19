@@ -235,3 +235,9 @@ externalDatabase:
     userPasswordKey: password
     # -- key in existingSecret with the admin postgresql password
     adminPasswordKey: postgresPassword
+
+networkPolicies:
+  enabled: true
+
+syncv3:
+  existingSecret: ""
