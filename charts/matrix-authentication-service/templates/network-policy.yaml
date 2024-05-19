@@ -1,0 +1,22 @@
+{{- if and .Values.networkPolicies.enabled .Values.postgresql.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "matrix-authentication-service.fullname" . }}-synapse-postgresql
+  labels:
+{{ include "matrix-authentication-service.labels" . | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "matrix-authentication-service.postgresql.hostname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: {{ include "matrix-authentication-service.name" . }}-synapse
+          app.kubernetes.io/instance: {{ .Release.Name }}
+    ports:
+      - port: tcp-postgresql
+        protocol: TCP
+{{- end }}

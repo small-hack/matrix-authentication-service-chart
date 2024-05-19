@@ -1,0 +1,13 @@
+{{- if .Values.postgresql.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "matrix-authentication-service.fullname" . }}-postgresql-initdb
+  labels:
+  {{ include "matrix-authentication-service.labels" . | nindent 4}}
+data:
+  matrix.sql: |
+    CREATE DATABASE matrix ENCODING 'UTF8' LOCALE 'C' TEMPLATE template0 OWNER {{ .Values.postgresql.global.postgresql.auth.username }};
+    GRANT ALL PRIVILEGES ON DATABASE matrix-authentication-service TO {{ .Values.postgresql.global.postgresql.auth.username }};
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {{ .Values.postgresql.global.postgresql.auth.username }};
+{{- end }}
