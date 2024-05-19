@@ -23,7 +23,7 @@ version: 0.0.2
 # It is recommended to use it with quotes.
 #
 # renovate: image=ghcr.io/matrix-org/matrix-authentication-service
-appVersion: "v0.9.0"
+appVersion: "0.9.0"
 
 dependencies:
   - name: postgresql
