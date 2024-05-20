@@ -25,6 +25,9 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| configVolume.existingClaim | string | `""` | name of an existing persistent volume claim to use for matrix-authentication-service config. If provided, ignores mas parameter map |
+| configVolume.storage | string | `"500Mi"` | storage capacity for creating a persistent volume |
+| configVolume.storageClassName | string | `"default"` | name of storage class for the persistent volume |
 | externalDatabase.database | string | `"mas"` | name of the database to try and connect to |
 | externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
 | externalDatabase.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
@@ -41,6 +44,8 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
 | externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
 | externalDatabase.username | string | `"mas"` | username of matrix-authentication-service postgres user |
+| extraVolumeMounts | list | `[]` |  |
+| extravolumes | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy. if image.tag is set to "latest", set to "Always" |
 | image.repository | string | `"ghcr.io/matrix-org/matrix-authentication-service"` |  |
@@ -70,24 +75,24 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.policy.data.passwords.require_number | bool | `true` | require at least one number in a password. default: false |
 | mas.policy.data.passwords.require_uppercase | bool | `true` | require at least one uppercase character in a password. default: false |
 | mas.upstream_oauth2.existingSecret | string | `""` | use an existing k8s secret for upstream oauth2 client_id and client_secret |
-| mas.upstream_oauth2.providers[0].authorization_endpoint | string | `"https://example.com/oauth2/authorize"` |  |
-| mas.upstream_oauth2.providers[0].brand_name | string | `"zitadel"` |  |
-| mas.upstream_oauth2.providers[0].claims_imports.displayname.template | string | `"{{ user.name }}"` |  |
-| mas.upstream_oauth2.providers[0].claims_imports.email.set_email_verification | string | `"import"` |  |
-| mas.upstream_oauth2.providers[0].claims_imports.email.template | string | `"{{ user.email }}"` |  |
-| mas.upstream_oauth2.providers[0].claims_imports.localpart.template | string | `"{{ user.preferred_username }}"` |  |
-| mas.upstream_oauth2.providers[0].claims_imports.subject.template | string | `"{{ user.sub }}"` |  |
-| mas.upstream_oauth2.providers[0].client_id | string | `""` |  |
-| mas.upstream_oauth2.providers[0].client_secret | string | `""` |  |
-| mas.upstream_oauth2.providers[0].discovery_mode | string | `"oidc"` |  |
-| mas.upstream_oauth2.providers[0].human_name | string | `"Example"` |  |
-| mas.upstream_oauth2.providers[0].id | string | `""` |  |
-| mas.upstream_oauth2.providers[0].issuer | string | `"https://example.com/"` |  |
-| mas.upstream_oauth2.providers[0].jwks_uri | string | `"https://example.com/oauth2/keys"` |  |
-| mas.upstream_oauth2.providers[0].pkce_method | string | `"auto"` |  |
-| mas.upstream_oauth2.providers[0].scope | string | `"openid email profile"` |  |
-| mas.upstream_oauth2.providers[0].token_endpoint | string | `"https://example.com/oauth2/token"` |  |
-| mas.upstream_oauth2.providers[0].token_endpoint_auth_method | string | `"client_secret_post"` |  |
+| mas.upstream_oauth2.providers.authorization_endpoint | string | `"https://example.com/oauth2/authorize"` |  |
+| mas.upstream_oauth2.providers.brand_name | string | `"zitadel"` |  |
+| mas.upstream_oauth2.providers.claims_imports.displayname.template | string | `"{{ user.name }}"` |  |
+| mas.upstream_oauth2.providers.claims_imports.email.set_email_verification | string | `"import"` |  |
+| mas.upstream_oauth2.providers.claims_imports.email.template | string | `"{{ user.email }}"` |  |
+| mas.upstream_oauth2.providers.claims_imports.localpart.template | string | `"{{ user.preferred_username }}"` |  |
+| mas.upstream_oauth2.providers.claims_imports.subject.template | string | `"{{ user.sub }}"` |  |
+| mas.upstream_oauth2.providers.client_id | string | `""` |  |
+| mas.upstream_oauth2.providers.client_secret | string | `""` |  |
+| mas.upstream_oauth2.providers.discovery_mode | string | `"oidc"` |  |
+| mas.upstream_oauth2.providers.human_name | string | `"Example"` |  |
+| mas.upstream_oauth2.providers.id | string | `""` |  |
+| mas.upstream_oauth2.providers.issuer | string | `"https://example.com/"` |  |
+| mas.upstream_oauth2.providers.jwks_uri | string | `"https://example.com/oauth2/keys"` |  |
+| mas.upstream_oauth2.providers.pkce_method | string | `"auto"` |  |
+| mas.upstream_oauth2.providers.scope | string | `"openid email profile"` |  |
+| mas.upstream_oauth2.providers.token_endpoint | string | `"https://example.com/oauth2/token"` |  |
+| mas.upstream_oauth2.providers.token_endpoint_auth_method | string | `"client_secret_post"` |  |
 | mas.upstream_oauth2.secretKeys.client_id | string | `"client_id"` | secret key to use in existing k8s secret for oauth2 client_id |
 | mas.upstream_oauth2.secretKeys.client_secret | string | `"client_secret"` | secret key to use in existing k8s secret for oauth2 client_secret |
 | nameOverride | string | `""` |  |
@@ -135,8 +140,6 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | tolerations | list | `[]` |  |
-| volumeMounts | list | `[]` |  |
-| volumes | list | `[]` |  |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.13.1](https://github.com/norwoodj/helm-docs/releases/v1.13.1)

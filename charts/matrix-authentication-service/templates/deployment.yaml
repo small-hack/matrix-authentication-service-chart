@@ -66,10 +66,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - |
-              config generate > /initial/config.yaml
+              config generate > /keys/config-secrets.yaml
+
           volumeMounts:
-            - name: initial-config
-              mountPath: "/initial"
+            - name: initial-config-keys-only
+              mountPath: "/keys"
 
         - name: add-secret-values-to-config
           image: "mikefarah/yq:latest"
@@ -88,15 +89,23 @@ spec:
             - -ec
             - |
               cp /initial/config.yaml /data/config.yaml && \
-              yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml
-              yq eval -i '.matrix.homeserver = env(MATRIX_HOMESERVER)' /data/config.yaml
-              yq eval -i '.matrix.secret = env(MATRIX_SECRET)' /data/config.yaml
+              SECRETS="yq '.secrets' /keys/config-secrets.yaml" && \
+              yq eval -i '.secrets = env(SECRETS)' /data/config.yaml && \
+              yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml && \
+              yq eval -i '.matrix.homeserver = env(MATRIX_HOMESERVER)' /data/config.yaml && \
+              yq eval -i '.matrix.secret = env(MATRIX_SECRET)' /data/config.yaml && \
               yq eval -i '.matrix.endpoint = env(MATRIX_ENDPOINT)' /data/config.yaml
+
           volumeMounts:
+            - name: initial-config-keys-only
+              mountPath: "/keys"
+
             - name: initial-config
               mountPath: "/initial"
+
             - name: config
               mountPath: /data
+
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -123,7 +132,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-          {{- with .Values.volumeMounts }}
+          {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
             - name: config
@@ -153,15 +162,21 @@ spec:
             {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
             {{- end }}
       volumes:
-      {{- with .Values.volumes }}
+      {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-        - name: initial-config
+        - name: initial-config-keys-only
           emptyDir:
             sizeLimit: 500Mi
+
         - name: config
           persistentVolumeClaim:
             claimName: {{ include "matrix-authentication-service.fullname" . }}-config
+
+        - name: initial-config
+          secret:
+            secretName: {{ template "matrix-authentication-service.fullname" . }}-initial-config-secret
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
