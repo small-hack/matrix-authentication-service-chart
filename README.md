@@ -1,4 +1,5 @@
-# Matrix Authentication Service Helm chart
+## Matrix Authentication Service Helm chart
+<a href="https://github.com/small-hack/matrix-authentication-service-chart/releases"><img src="https://img.shields.io/github/v/release/small-hack/matrix-authentication-service-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
 A helm chart for deploying the [matrix-authentication-service](https://github.com/matrix-org/matrix-authentication-service) on Kubernetes.
 
