@@ -32,7 +32,7 @@ jobs:
 
       - name: Add dependency chart repos
         run: |
-          helm dep update charts/matrix-sliding-sync
+          helm dep update charts/matrix-authentication-service
 
       - name: Run chart-releaser
         id: helm-release

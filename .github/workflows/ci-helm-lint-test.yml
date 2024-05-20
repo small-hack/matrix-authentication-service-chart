@@ -3,7 +3,7 @@ name: Lint and Test Chart
 on:
   pull_request:
     paths:
-      - 'charts/matrix-sliding-sync/**'
+      - 'charts/matrix-authentication-service/**'
 
 permissions:
   contents: read
