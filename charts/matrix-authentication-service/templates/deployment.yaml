@@ -58,12 +58,135 @@ spec:
             - "-c"
             - "until pg_isready -h $PGHOST -U $PGUSER; do sleep 2; done"
         {{- end }}
+
+        - name: {{ .Chart.Name }}-generate-config
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - |
+              config generate > /keys/config-secrets.yaml
+
+          volumeMounts:
+            - name: initial-config-keys-only
+              mountPath: "/keys"
+
+        - name: add-secret-values-to-config
+          image: "mikefarah/yq:latest"
+          imagePullPolicy: Always
+          env:
+            - name: PG_URI
+              value: {{ include "matrix-authentication-service.postgresUri" . }}
+            - name: MATRIX_SECRET
+              value: {{ include "matrix-authentication-service.matrix.secretName" . }}
+            - name: MATRIX_HOMESERVER
+              value: {{ .Values.mas.matrix.homeserver }}
+            - name: MATRIX_ENDPOINT
+              value: {{ .Values.mas.matrix.endpoint }}
+            {{- if .Values.mas.upstream_oauth2.existingSecret }}
+            {{- if .Values.mas.upstream_oauth2.secretKeys.issuer }}
+            - name: ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.issuer }}
+            {{- end }} {{/* end oauth2 issuer */}}
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.client_id }}
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.client_secret}}
+            {{- if .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint}}
+            - name: AUTH_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint }}
+            {{- end }} {{/* end auth endpoint */}}
+            {{- if .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
+            - name: TOKEN_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
+            {{- end }} {{/* end token endpoint */}}
+            {{- if .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
+            - name: USERINFO_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
+            {{- end }} {{/* user info endpoint */}}
+            {{- end }} {{/* end check for oauth2 existing secret */}}
+            {{- if .Values.mas.masClientSecret.existingSecret }}
+            - name: MAS_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.masClientSecret.existingSecret }}
+                  key: {{ .Values.mas.masClientSecret.secretKeys.client_id }}
+            - name: MAS_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.masClientSecret.existingSecret }}
+                  key: {{ .Values.mas.masClientSecret.secretKeys.client_secret }}
+            {{- end }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp /initial/config.yaml /data/config.yaml && \
+              SECRETS="yq '.secrets' /keys/config-secrets.yaml" && \
+              {{- if .Values.mas.upstream_oauth2.existingSecret }}
+              yq eval -i '.upstream_oauth2.providers[0].issuer = env(ISSUER)' /data/homeserver.yaml && \
+              yq eval -i '.upstream_oauth2.providers[0].client_id = env(CLIENT_ID)' /data/homeserver.yaml && \
+              yq eval -i '.upstream_oauth2.providers[0].client_secret = env(CLIENT_SECRET)' /data/homeserver.yaml && \
+              {{- if .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint }}
+              yq eval -i '.upstream_oauth2.providers[0].authorization_endpoint = env(AUTH_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }} {{/* end auth endpoint */}}
+              {{- if .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
+              yq eval -i '.upstream_oauth2.providers[0].token_endpoint = env(TOKEN_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }} {{/* end token endpoint */}}
+              {{- if .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
+              yq eval -i '.upstream_oauth2.providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }} {{/* end oauth2 userinfo endpoint */}}
+              {{- end }} {{/* end check for existing oauth2 secret */}}
+              {{- if .Values.mas.masClientSecret.existingSecret }}
+              yq eval -i '.clients[0].client_id = env(MAS_CLIENT_ID)' /data/homeserver.yaml && \
+              yq eval -i '.clients[0].client_secret = env(MAS_CLIENT_SECRET)' /data/homeserver.yaml && \
+              {{- end }} {{/* end mas client secret existingSecret */}}
+              yq eval -i '.secrets = env(SECRETS)' /data/config.yaml && \
+              yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml && \
+              yq eval -i '.matrix.homeserver = env(MATRIX_HOMESERVER)' /data/config.yaml && \
+              yq eval -i '.matrix.secret = env(MATRIX_SECRET)' /data/config.yaml && \
+              yq eval -i '.matrix.endpoint = env(MATRIX_ENDPOINT)' /data/config.yaml
+
+          volumeMounts:
+            - name: initial-config-keys-only
+              mountPath: "/keys"
+
+            - name: initial-config
+              mountPath: "/initial"
+
+            - name: config
+              mountPath: /data
+
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MAS_CONFIG
+              value: /data/config.yaml
+          command:
+            - server
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
@@ -78,10 +201,12 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+          {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
+            - name: config
+              mountPath: /data
           env:
             - name: PGHOST
               valueFrom:
@@ -106,22 +231,22 @@ spec:
             {{- if or .Values.postgresql.sslmode .Values.externalDatabase.sslmode }}
             {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
             {{- end }}
-            {{- if not .Values.syncv3.existingSecret }}
-            - name: SYNCV3_DB
-              value: {{ include "matrix-authentication-service.dbConnString" . }}
-            {{- end }}
-          envFrom:
-            - secretRef:
-          {{- if .Values.syncv3.existingSecret }}
-                name: {{ .Values.syncv3.existingSecret }}
-          {{- else }}
-                name: {{ include "matrix-authentication-service.fullname" . }}-env
-          {{- end }}
-
-      {{- with .Values.volumes }}
       volumes:
+      {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        - name: initial-config-keys-only
+          emptyDir:
+            sizeLimit: 500Mi
+
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "matrix-authentication-service.fullname" . }}-config
+
+        - name: initial-config
+          secret:
+            secretName: {{ template "matrix-authentication-service.fullname" . }}-initial-config-secret
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
