@@ -45,8 +45,8 @@ service:
   annotations: {}
   # -- type of service
   type: ClusterIP
-  # -- targetPort of service. should be the same as port for syncv3.bindaddr
-  targetPort: 8008
+  # -- targetPort of service. should be the same as port for bindaddr
+  targetPort: 8080
   # -- Port of service
   port: 80
 
@@ -155,13 +155,13 @@ postgresql:
       auth:
         # database credentials to use if you don't use an existingSecret
         # -- username of matrix-authentication-service postgres user
-        username: syncv3
+        username: mas
         # -- password of matrix-authentication-service postgres user - ignored using exsitingSecret
         password: changeme
         # -- which port to use to connect to your database server
         port: 5432
         # -- name of the database
-        database: syncv3
+        database: mas
         # -- Name of existing secret to use for PostgreSQL credentials
         existingSecret: ""
         # secretKeys to grab from existingSecret
@@ -210,7 +210,7 @@ externalDatabase:
   sslkey: ""
   # database credentials to use if you don't use an existingSecret
   # -- username of matrix-authentication-service postgres user
-  username: syncv3
+  username: mas
   # -- password of matrix-authentication-service postgres user - ignored using exsitingSecret
   password: changeme
   # -- which port to use to connect to your database server
@@ -218,7 +218,7 @@ externalDatabase:
   # -- hostname of db server. Can be left blank if using postgres subchart
   hostname: ""
   # -- name of the database to try and connect to
-  database: "syncv3"
+  database: "mas"
   # -- Name of existing secret to use for PostgreSQL credentials
   existingSecret: ""
   # if externalDatabase.existingSecret is provided, the following are ignored
@@ -239,5 +239,16 @@ externalDatabase:
 networkPolicies:
   enabled: true
 
-syncv3:
-  existingSecret: ""
+# this stands for Matrix Authentication Service
+mas:
+  matrix:
+    # -- name of your matrix home server (synapse or dendrite) with port if needed
+    homeserver: "localhost:8008"
+    # -- i don't know what this is
+    secret: "test"
+    # -- endpoint of your matrix home server (synapse or dendrite) with port if needed
+    endpoint: "https://localhost:8008"
+    # -- grab the above secret from an existing k8s secret. if set, ignores mas.matrix.secret
+    existingSecret: ""
+    # -- name of the key in existing secret to grab matrix.secret from
+    secretKey: "secret"

@@ -58,6 +58,45 @@ spec:
             - "-c"
             - "until pg_isready -h $PGHOST -U $PGUSER; do sleep 2; done"
         {{- end }}
+
+        - name: {{ .Chart.Name }}-generate-config
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - |
+              config generate > /initial/config.yaml
+          volumeMounts:
+            - name: initial-config
+              mountPath: "/initial"
+
+        - name: add-secret-values-to-config
+          image: "mikefarah/yq:latest"
+          imagePullPolicy: Always
+          env:
+            - name: PG_URI
+              value: {{ include "matrix-authentication-service.postgresUri" . }}
+            - name: MATRIX_SECRET
+              value: {{ include "matrix-authentication-service.matrix.secretName" . }}
+            - name: MATRIX_HOMESERVER
+              value: {{ .Values.mas.matrix.homeserver }}
+            - name: MATRIX_ENDPOINT
+              value: {{ .Values.mas.matrix.endpoint }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp /initial/config.yaml /data/config.yaml && \
+              yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml
+              yq eval -i '.matrix.homeserver = env(MATRIX_HOMESERVER)' /data/config.yaml
+              yq eval -i '.matrix.secret = env(MATRIX_SECRET)' /data/config.yaml
+              yq eval -i '.matrix.endpoint = env(MATRIX_ENDPOINT)' /data/config.yaml
+          volumeMounts:
+            - name: initial-config
+              mountPath: "/initial"
+            - name: config
+              mountPath: /data
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -106,22 +145,16 @@ spec:
             {{- if or .Values.postgresql.sslmode .Values.externalDatabase.sslmode }}
             {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
             {{- end }}
-            {{- if not .Values.syncv3.existingSecret }}
-            - name: SYNCV3_DB
-              value: {{ include "matrix-authentication-service.dbConnString" . }}
-            {{- end }}
-          envFrom:
-            - secretRef:
-          {{- if .Values.syncv3.existingSecret }}
-                name: {{ .Values.syncv3.existingSecret }}
-          {{- else }}
-                name: {{ include "matrix-authentication-service.fullname" . }}-env
-          {{- end }}
-
-      {{- with .Values.volumes }}
       volumes:
+      {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        - name: initial-config
+          emptyDir:
+            sizeLimit: 500Mi
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "matrix-authentication-service.fullname" . }}-config
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

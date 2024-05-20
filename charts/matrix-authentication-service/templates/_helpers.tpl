@@ -163,14 +163,28 @@ Helper function to get postgres ssl mode
 {{- end }}
 
 {{/*
-templates out SYNCV3_DB which is a postgres connection string: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
+Helper function to get a postgres connection string for the database, with all of the auth and SSL settings automatically applied
 */}}
-{{- define "matrix-authentication-service.dbConnString" -}}
-{{- if not .Values.syncv3.existingSecret }}
-{{- if or .Values.postgresql.enabled }}
-{{- printf "user=%s dbname=%s sslmode=disable host=%s password=%s" .Values.postgresql.global.postgresql.auth.username .Values.postgresql.global.postgresql.auth.database (include "matrix-authentication-service.postgresql.hostname" .) .Values.postgresql.global.postgresql.auth.password }}
+{{- define "matrix-authentication-service.postgresUri" -}}
+{{- if .Values.postgresql.enabled -}}
+postgres://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ include "matrix-authentication-service.postgresql.hostname" . }}/%s{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode}}{{ end }}
 {{- else -}}
-{{- printf "user=%s dbname=%s sslmode=%s sslmode=%s host=%s" .Values.externalDatabase.username .Values.externalDatabase.database .Values.externalDatabase.sslmode .Values.externalDatabase.hostname .Values.externalDatabase.password }}
+postgres://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ include "matrix-authentication-service.postgresql.hostname" . }}:{{ .Values.postgresql.port }}/%s{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode }}{{ end }}
 {{- end }}
+{{- if .Values.externalDatabase.enabled -}}
+postgres://{{ .Values.externalDatabase.username }}:{{ .Values.externalDatabase.password }}@{{ .Values.externalDatabase.hostname }}/%s{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode}}{{ end }}
+{{- else -}}
+postgres://{{ .Values.externalDatabase.username }}:{{ .Values.externalDatabase.password }}@{{ .Values.externalDatabase.hostname }}:{{ .Values.postgresql.port }}/%s{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode }}{{ end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Helper function to get the matrix secret?
+*/}}
+{{- define "matrix-authentication-service.matrix.secretName" -}}
+{{- if .Values.mas.matrix.existingSecret -}}
+{{ .Values.mas.matrix.existingSecret }}
+{{- else -}}
+{{ template "matrix-authentication-service.fullname" . }}-matrix-secret
 {{- end }}
 {{- end }}
