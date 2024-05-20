@@ -5,7 +5,7 @@ A helm chart for deploying the [matrix-authentication-service](https://github.co
 
 ## TLDR
 
-Read through the parameters and modify them locally before installing the chart:
+Read through the [parameters](./charts/matrix-authentication-service-chart/README.md) and modify them locally before installing the chart:
 
 ```bash
 # add the helm repo locally
@@ -18,15 +18,8 @@ helm show values matrix-authentication-service/matrix-authentication-service > v
 helm install my-release-name matrix-authentication-service/matrix-authentication-service --values values.yaml
 ```
 
-
 ## Notes
+You can find the official docs for the Matrix Authentication Service at [matrix-org.github.io/matrix-authentication-service](https://matrix-org.github.io/matrix-authentication-service/index.html) for now, but this is expected to change to [element-hq.github.io/matrix-authentication-service](https://element-hq.github.io/matrix-authentication-service/index.html) in the near future.
 
-Docs are currently here: https://matrix-org.github.io/matrix-authentication-service/setup/general.html
-
-We're currently testing with [`0.9.0`](https://github.com/matrix-org/matrix-authentication-service/releases/tag/v0.9.0) however I want to note that this will be sourced from the element-hq in the future, as matrix-org will no longer be maintaining it.
-
-I generated this config using:
-
-```bash
-docker run ghcr.io/matrix-org/matrix-authentication-service:main config generate > config.yaml
-```
+## Status
+This chart was developed for use with the [small-hack/matrix-chart](https://github.com/small-hack/matrix-chart). We're still testing this chart. Feel free to open PRs and Issues if you see anything broken or want a feature.
