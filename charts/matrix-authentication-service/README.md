@@ -61,6 +61,35 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.matrix.homeserver | string | `"localhost:8008"` | name of your matrix home server (synapse or dendrite) with port if needed |
 | mas.matrix.secret | string | `"test"` | i don't know what this is |
 | mas.matrix.secretKey | string | `"secret"` | name of the key in existing secret to grab matrix.secret from |
+| mas.policy.data.admin_clients | list | `[]` | Client IDs which are allowed to ask for admin access with a client_credentials grant |
+| mas.policy.data.admin_users | list | `[]` | Users which are allowed to ask for admin access. If possible, use the can_request_admin flag on users instead. |
+| mas.policy.data.client_registration.allow_host_mismatch | bool | `true` | don't require URIs to be on the same host. default: false |
+| mas.policy.data.client_registration.allow_insecure_uris | bool | `true` | allow non-SSL and localhost URIs. default: false |
+| mas.policy.data.passwords.min_length | int | `16` | minimum length of a password. default: 0 |
+| mas.policy.data.passwords.require_lowercase | bool | `true` | require at least one lowercase character in a password. default: false |
+| mas.policy.data.passwords.require_number | bool | `true` | require at least one number in a password. default: false |
+| mas.policy.data.passwords.require_uppercase | bool | `true` | require at least one uppercase character in a password. default: false |
+| mas.upstream_oauth2.existingSecret | string | `""` | use an existing k8s secret for upstream oauth2 client_id and client_secret |
+| mas.upstream_oauth2.providers[0].authorization_endpoint | string | `"https://example.com/oauth2/authorize"` |  |
+| mas.upstream_oauth2.providers[0].brand_name | string | `"zitadel"` |  |
+| mas.upstream_oauth2.providers[0].claims_imports.displayname.template | string | `"{{ user.name }}"` |  |
+| mas.upstream_oauth2.providers[0].claims_imports.email.set_email_verification | string | `"import"` |  |
+| mas.upstream_oauth2.providers[0].claims_imports.email.template | string | `"{{ user.email }}"` |  |
+| mas.upstream_oauth2.providers[0].claims_imports.localpart.template | string | `"{{ user.preferred_username }}"` |  |
+| mas.upstream_oauth2.providers[0].claims_imports.subject.template | string | `"{{ user.sub }}"` |  |
+| mas.upstream_oauth2.providers[0].client_id | string | `""` |  |
+| mas.upstream_oauth2.providers[0].client_secret | string | `""` |  |
+| mas.upstream_oauth2.providers[0].discovery_mode | string | `"oidc"` |  |
+| mas.upstream_oauth2.providers[0].human_name | string | `"Example"` |  |
+| mas.upstream_oauth2.providers[0].id | string | `""` |  |
+| mas.upstream_oauth2.providers[0].issuer | string | `"https://example.com/"` |  |
+| mas.upstream_oauth2.providers[0].jwks_uri | string | `"https://example.com/oauth2/keys"` |  |
+| mas.upstream_oauth2.providers[0].pkce_method | string | `"auto"` |  |
+| mas.upstream_oauth2.providers[0].scope | string | `"openid email profile"` |  |
+| mas.upstream_oauth2.providers[0].token_endpoint | string | `"https://example.com/oauth2/token"` |  |
+| mas.upstream_oauth2.providers[0].token_endpoint_auth_method | string | `"client_secret_post"` |  |
+| mas.upstream_oauth2.secretKeys.client_id | string | `"client_id"` | secret key to use in existing k8s secret for oauth2 client_id |
+| mas.upstream_oauth2.secretKeys.client_secret | string | `"client_secret"` | secret key to use in existing k8s secret for oauth2 client_secret |
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` |  |
 | nodeSelector | object | `{}` |  |
