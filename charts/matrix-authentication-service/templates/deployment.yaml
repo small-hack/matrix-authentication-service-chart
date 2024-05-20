@@ -84,12 +84,82 @@ spec:
               value: {{ .Values.mas.matrix.homeserver }}
             - name: MATRIX_ENDPOINT
               value: {{ .Values.mas.matrix.endpoint }}
+            {{- if .Values.mas.upstream_oauth2 }}
+            {{- if .Values.mas.upstream_oauth2.secretKeys.issuer }}
+            - name: ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.issuer }}
+            {{- end }}
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.client_id }}
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.client_secret}}
+            {{- if .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint}}
+            - name: AUTH_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint }}
+            {{- end }}
+            {{- if .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
+            - name: TOKEN_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
+            {{- end }}
+            {{- if .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
+            - name: USERINFO_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.upstream_oauth2 }}
+                  key: {{ .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.mas.masClientSecret.existingSecret }}
+            - name: MAS_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.masClientSecret.existingSecret }}
+                  key: {{ .Values.mas.masClientSecret.secretKeys.client_id }}
+            - name: MAS_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mas.masClientSecret.existingSecret }}
+                  key: {{ .Values.mas.masClientSecret.secretKeys.client_secret }}
+            {{- end }}
           command:
             - /bin/sh
             - -ec
             - |
               cp /initial/config.yaml /data/config.yaml && \
               SECRETS="yq '.secrets' /keys/config-secrets.yaml" && \
+              {{- if .Values.mas.upstream_oauth2.existingSecret }}
+              yq eval -i '.upstream_oauth2.providers[0].issuer = env(ISSUER)' /data/homeserver.yaml && \
+              yq eval -i '.upstream_oauth2.providers[0].client_id = env(CLIENT_ID)' /data/homeserver.yaml && \
+              yq eval -i '.upstream_oauth2.providers[0].client_secret = env(CLIENT_SECRET)' /data/homeserver.yaml && \
+              {{- if .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint }}
+              yq eval -i '.upstream_oauth2.providers[0].authorization_endpoint = env(AUTH_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- if .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
+              yq eval -i '.upstream_oauth2.providers[0].token_endpoint = env(TOKEN_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- if .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
+              yq eval -i '.upstream_oauth2.providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- end }}
+              {{- if .Values.mas.masClientSecret.existingSecret }}
+              yq eval -i '.clients[0].client_id = env(MAS_CLIENT_ID)' /data/homeserver.yaml && \
+              yq eval -i '.clients[0].client_secret = env(MAS_CLIENT_SECRET)' /data/homeserver.yaml && \
+              {{- end }}
               yq eval -i '.secrets = env(SECRETS)' /data/config.yaml && \
               yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml && \
               yq eval -i '.matrix.homeserver = env(MATRIX_HOMESERVER)' /data/config.yaml && \
