@@ -350,7 +350,7 @@ mas:
 
       # Which signing algorithm to use to sign the authentication request when using
       # the `private_key_jwt` or the `client_secret_jwt` authentication methods
-      #token_endpoint_auth_signing_alg: RS256
+      # token_endpoint_auth_signing_alg: RS256
 
       # The scopes to request from the provider
       # In most cases, it should always include `openid` scope
@@ -410,17 +410,17 @@ mas:
         # For example, on the `example.com` server, if the localpart is `alice`,
         #  the user's Matrix ID will be `@alice:example.com`.
         localpart:
-          #action: force
+          # action: force
           template: "{{ user.preferred_username }}"
 
         # The display name is the user's display name.
         displayname:
-          #action: suggest
+          # action: suggest
           template: "{{ user.name }}"
 
         # An email address to import.
         email:
-          #action: suggest
+          # action: suggest
           template: "{{ user.email }}"
 
           # Whether the email address must be marked as verified.
