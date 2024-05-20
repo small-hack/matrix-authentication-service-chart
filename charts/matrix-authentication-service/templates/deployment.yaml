@@ -103,6 +103,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MAS_CONFIG
+              value: /data/config.yaml
+          command:
+            - server
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
@@ -117,10 +122,12 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+          {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
+            - name: config
+              mountPath: /data
           env:
             - name: PGHOST
               valueFrom:
