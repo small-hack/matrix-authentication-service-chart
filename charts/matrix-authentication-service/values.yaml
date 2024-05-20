@@ -251,15 +251,18 @@ configVolume:
 # this stands for Matrix Authentication Service
 mas:
   masClientSecret:
-    # -- use an existing secret for: mas.clients[0].client_id, mas.clients[0].client_secret
+    # -- use an existing secret for clients section of config.yaml for:
+    # mas.clients[0].client_id, mas.clients[0].client_secret
     # if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret
     existingSecret: ""
+
     secretKeys:
       # -- key in secret with the client_id
       client_id: "client_id"
       # -- key in secret with the client_secret
       client_secret: "client_secret"
 
+  # see more info here:  https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#clients
   clients:
       # -- a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID.
     - client_id: ""
@@ -313,6 +316,7 @@ mas:
         require_number: true
 
   # see: https://matrix-org.github.io/matrix-authentication-service/setup/sso.html?highlight=ulid#general-configuration
+  # and also see: https://matrix-org.github.io/matrix-authentication-service/setup/sso.html#keycloak
   upstream_oauth2:
 
     # -- use an existing k8s secret for upstream oauth2 client_id and client_secret
