@@ -1,0 +1,8 @@
+postgresql:
+  volumePermissions:
+    enabled: false
+  primary:
+    networkPolicy:
+      enabled: false
+
+fullnameOverride: matrix-stack

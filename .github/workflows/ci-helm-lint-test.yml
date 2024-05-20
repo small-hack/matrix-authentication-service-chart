@@ -22,6 +22,7 @@ jobs:
         uses: azure/setup-helm@v4
 
       - name: Add dependency chart repos
+        # adds bitnami for postgres and matrix for synapse
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add matrix https://small-hack.github.io/matrix-chart
@@ -50,5 +51,8 @@ jobs:
         id: install
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          helm install matrix matrix/matrix --set postgresql.volumePermissions.enabled=false,postgresql.primary.networkPolicy.enabled=false,element.enabled=true,fullnameOverride=matrix-stack
+          echo "installing matrix"
+          helm install matrix matrix/matrix --values .github/matrix_values.yaml
+
+          echo "installing matrix auth service"
           ct install --target-branch ${{ github.event.repository.default_branch }} --helm-extra-set-args '--set=postgresql.volumePermissions.enabled=false --set=postgresql.primary.networkPolicy.enabled=false --set=syncv3.server=http://matrix-stack-synapse'
