@@ -11,5 +11,5 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.configVolume.capacity }}
+      storage: {{ .Values.configVolume.storage }}
 {{- end }}
