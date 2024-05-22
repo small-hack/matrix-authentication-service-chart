@@ -14,7 +14,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 15.3.5 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 15.4.0 |
 
 ## Values
 
