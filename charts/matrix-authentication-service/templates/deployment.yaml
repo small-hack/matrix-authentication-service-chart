@@ -239,13 +239,17 @@ spec:
           emptyDir:
             sizeLimit: 500Mi
 
-        - name: config
-          persistentVolumeClaim:
-            claimName: {{ include "matrix-authentication-service.fullname" . }}-config
-
         - name: initial-config
           secret:
             secretName: {{ template "matrix-authentication-service.fullname" . }}-initial-config-secret
+
+        - name: config
+          persistentVolumeClaim:
+            {{- if .Values.configVolume.existingClaim }}
+            claimName: {{ .Values.configVolume.existingClaim }}
+            {{- else -}}
+            claimName: {{ include "matrix-authentication-service.fullname" . }}-config
+            {{- end }}
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
