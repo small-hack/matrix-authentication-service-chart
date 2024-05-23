@@ -247,7 +247,14 @@ configVolume:
   # -- storage capacity for creating a persistent volume
   storage: "500Mi"
 
-# this stands for Matrix Authentication Service
+
+# -- Existing Kubernetes Secret for entire matrix authentication service `config.yaml` file.
+# If set, everything under the mas section of the values.yaml is ignored.
+existingMasConfigSecret: ""
+
+
+# this stands for Matrix Authentication Service and is for templating out the config.yaml
+# learn more about the config file here: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html
 mas:
   masClientSecret:
     # -- use an existing secret for clients section of config.yaml for:
@@ -270,6 +277,7 @@ mas:
       # -- a shared secret used for the homeserver to authenticate
       client_secret: ""
 
+  # see more info here: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#matrix
   matrix:
     # -- name of your matrix home server (synapse or dendrite) with port if needed
     homeserver: "localhost:8008"
@@ -282,19 +290,18 @@ mas:
     # -- name of the key in existing secret to grab matrix.secret from
     secretKey: "secret"
 
+  # see more info here: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#policy
   policy:
     data:
       # -- Users which are allowed to ask for admin access. If possible, use the
       # can_request_admin flag on users instead.
       admin_users: []
       #  - person1
-      #  - person2
 
       # -- Client IDs which are allowed to ask for admin access with a
       # client_credentials grant
       admin_clients: []
       #  - 01H8PKNWKKRPCBW4YGH1RWV279
-      #  - 01HWQCPA5KF10FNCETY9402WGF
 
       # Dynamic Client Registration
       client_registration:

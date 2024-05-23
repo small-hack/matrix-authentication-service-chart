@@ -59,7 +59,27 @@ spec:
             - "until pg_isready -h $PGHOST -U $PGUSER; do sleep 2; done"
         {{- end }}
 
-        - name: {{ .Chart.Name }}-generate-config
+        {{- if .Values.existingMasConfigSecret }}
+        - name: {{ .Chart.Name }}-cp-config-to-datadir
+          image: alpine:latest
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp /initial/config.yaml /data/config.yaml
+
+          volumeMounts:
+            - name: initial-config
+              mountPath: "/initial"
+
+            - name: config
+              mountPath: /data
+        {{- else -}} {{/* if no existingMasConfigSecret was set */}}
+        - name: {{ .Chart.Name }}-generate-config-from-helm-values
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -175,6 +195,7 @@ spec:
 
             - name: config
               mountPath: /data
+        {{- end }} {{/* end if not existingMasConfigSecret */}}
 
       containers:
         - name: {{ .Chart.Name }}
@@ -241,7 +262,11 @@ spec:
 
         - name: initial-config
           secret:
+            {{- if .Values.existingMasConfigSecret }}
+            secretName: {{ .Values.existingMasConfigSecret }}
+            {{- else -}}
             secretName: {{ template "matrix-authentication-service.fullname" . }}-initial-config-secret
+            {{- end }}
 
         - name: config
           persistentVolumeClaim:
