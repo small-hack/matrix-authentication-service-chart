@@ -79,20 +79,6 @@ spec:
             - name: config
               mountPath: /data
         {{- else -}} {{/* if no existingMasConfigSecret was set */}}
-        - name: generate-secrets
-          {{- with .Values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - |
-              config generate > /data/config-secrets.yaml
-          volumeMounts:
-            - name: config
-              mountPath: /data
-
         - name: add-secret-values-to-config
           image: "alpine:latest"
           imagePullPolicy: Always

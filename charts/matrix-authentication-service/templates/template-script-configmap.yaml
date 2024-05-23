@@ -5,60 +5,77 @@ metadata:
   name: {{ include "matrix-authentication-service.fullname" . }}-templating-script
 data:
   templateconfig.sh: |-
-    #!/bin/bash
+    #!/bin/sh
     # quick script to template out some sensitive values for the
     # matrix authentication service config.yaml file
 
-    # copy initial config file from kubernetes secret to persistent volume
-    echo -e "\ncopying /initial/config.yaml to /data/config.yaml"
-    cp /initial/config.yaml /data/config.yaml
+    # download the mas-cli and generate a config
+    ARCH=x86_64 # or aarch64
+    OS=linux # or macos
+    VERSION=latest
+
+    # URL to the right archive
+    URL="https://github.com/matrix-org/matrix-authentication-service/releases/${VERSION}/download/mas-cli-${ARCH}-${OS}.tar.gz"
+
+    # Create a directory and extract the archive in it
+    mkdir -p /tmp/mas
+    curl -sL "$URL" | tar xzC /tmp/mas
+
+    # This should display the help message
+    /tmp/mas-cli --help
+    /tmp/mas-cli config generate > /data/config-secrets.yaml
 
     # templates out the secrets object section of the config.yaml
     export SECRETS="yq '.secrets' /data/config-secrets.yaml"
     if [ `cat /data/config.yaml | yq .secrets` == "{}" ]; then
-        echo -e "\nupdating to new secret keys"
+        echo "\nupdating to new secret keys"
         yq eval -i '.secrets = env(SECRETS)' /data/config.yaml
     else
-        echo -e "\nsecrets object already exist, so we will not overwrite it"
+        echo "\nsecrets object already exist, so we will not overwrite it"
     fi
     rm /data/config-secrets.yaml || echo "\nno secret file to clean up, moving on..."
 
+    # copy initial config file from kubernetes secret to persistent volume
+    echo "\ncopying /initial/config.yaml to /data/config.yaml"
+    cp /initial/config.yaml /data/config.yaml
+
+
     # database section...
-    echo -e "\nUpdate postgresql URI"
+    echo "\nUpdate postgresql URI"
     yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml
 
     # matrix section...
-    echo -e "\nUpdate matrix homserver, secret, and endpoint"
+    echo "\nUpdate matrix homserver, secret, and endpoint"
     yq eval -i '.matrix.homeserver = env(MATRIX_HOMESERVER)' /data/config.yaml && \
     yq eval -i '.matrix.secret = env(MATRIX_SECRET)' /data/config.yaml && \
     yq eval -i '.matrix.endpoint = env(MATRIX_ENDPOINT)' /data/config.yaml
 
     # upstream oauth2 section...
     {{- if .Values.mas.upstream_oauth2.existingSecret }}
-    echo -e "\n updating upstream_oauth2.providers.issuer, client_id, and client_secret"
+    echo "\n updating upstream_oauth2.providers.issuer, client_id, and client_secret"
     yq eval -i '.upstream_oauth2.providers[0].issuer = env(ISSUER)' /data/homeserver.yaml && \
     yq eval -i '.upstream_oauth2.providers[0].client_id = env(CLIENT_ID)' /data/homeserver.yaml && \
     yq eval -i '.upstream_oauth2.providers[0].client_secret = env(CLIENT_SECRET)' /data/homeserver.yaml
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint }}
-    echo -e "\nUpdating authorization_endpoint of config.yaml"
+    echo "\nUpdating authorization_endpoint of config.yaml"
     yq eval -i '.upstream_oauth2.providers[0].authorization_endpoint = env(AUTH_ENDPOINT)' /data/homeserver.yaml
     {{- end }} {{/* end auth endpoint */}}
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
-    echo -e "\nUpdating token endpoint of config.yaml"
+    echo "\nUpdating token endpoint of config.yaml"
     yq eval -i '.upstream_oauth2.providers[0].token_endpoint = env(TOKEN_ENDPOINT)' /data/homeserver.yaml
     {{- end }} {{/* end token endpoint */}}
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
-    echo -e "\nUpdating userinfo endpoint of config.yaml"
+    echo "\nUpdating userinfo endpoint of config.yaml"
     yq eval -i '.upstream_oauth2.providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml
     {{- end }}
     {{- end }} {{/* end check for existing oauth2 secret */}}
 
     # finally, the clients section...
     {{- if .Values.mas.masClientSecret.existingSecret }}
-    echo -e "\nUpdating clients section of config.yaml"
+    echo "\nUpdating clients section of config.yaml"
     yq eval -i '.clients[0].client_id = env(MAS_CLIENT_ID)' /data/homeserver.yaml && \
     yq eval -i '.clients[0].client_secret = env(MAS_CLIENT_SECRET)' /data/homeserver.yaml
     {{- end }} {{/* end mas client secret existingSecret */}}
