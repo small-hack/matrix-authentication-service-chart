@@ -209,9 +209,6 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-      {{- with .Values.extraVolumes }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
         - name: templating-script
           configMap:
             name: {{ include "matrix-authentication-service.fullname" . }}-templating-script
@@ -231,6 +228,9 @@ spec:
             {{- else -}}
             claimName: {{ include "matrix-authentication-service.fullname" . }}-config
             {{- end }}
+      {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 
       {{- with .Values.nodeSelector }}
       nodeSelector:

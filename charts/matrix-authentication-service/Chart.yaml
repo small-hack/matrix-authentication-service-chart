@@ -22,8 +22,10 @@ version: 0.3.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 #
+# we use the commit hash right now, but this should change from matrix-org to element-hq
+# and hopefully be properly tagged down the line
 # renovate: image=ghcr.io/matrix-org/matrix-authentication-service
-appVersion: "0.9.0"
+appVersion: "sha-206d45b"
 
 dependencies:
   - name: postgresql
