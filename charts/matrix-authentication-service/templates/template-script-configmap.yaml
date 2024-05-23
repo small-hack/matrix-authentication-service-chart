@@ -22,8 +22,8 @@ data:
     curl -sL "$URL" | tar xzC /tmp/mas
 
     # This should display the help message
-    /tmp/mas-cli --help
-    /tmp/mas-cli config generate > /data/config-secrets.yaml
+    /tmp/mas/mas-cli --help
+    /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
 
     # templates out the secrets object section of the config.yaml
     export SECRETS="yq '.secrets' /data/config-secrets.yaml"
