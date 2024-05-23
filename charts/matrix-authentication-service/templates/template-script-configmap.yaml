@@ -5,7 +5,6 @@ metadata:
   name: {{ include "matrix-authentication-service.fullname" . }}-templating-script
 data:
   templateconfig.sh: |-
-    #!/bin/sh
     # quick script to template out some sensitive values for the
     # matrix authentication service config.yaml file
 
@@ -13,16 +12,47 @@ data:
     ARCH=x86_64 # or aarch64
     OS=linux # or macos
     VERSION=latest
-
+    BLUE='\033[1;34m'
+    GREEN='\033[1;32m'
+    NC='\033[0m'
     # URL to the right archive
     URL="https://github.com/matrix-org/matrix-authentication-service/releases/${VERSION}/download/mas-cli-${ARCH}-${OS}.tar.gz"
+    echo -e "URL is ${URL}"
+
+    # install stuff
+    echo -e "\n\n ------------INSTALL STUFF-------------- \n\n"
+
+    apk update
+    echo -e "${BLUE}installing curl:${NC} ${GREEN}apk add curl${NC}"
+    apk add curl
+    echo -e "${BLUE}installing yq:${NC} ${GREEN}apk add yq-go${NC}"
+    apk add yq-go
+
+    echo -e "\n\n ------------END INSTALL STUFF-------------- \n\n"
 
     # Create a directory and extract the archive in it
-    mkdir -p /tmp/mas
-    curl -sL "$URL" | tar xzC /tmp/mas
+    echo -e "${BLUE}making the /tmp/mas directory:${NC} ${GREEN}mkdir -p /tmp/mas${NC}"
+    mkdir -p /tmp/mas && echo -e "\ncreated directory"
+    echo -e "\n${BLUE}stat /tmp/mas directory:${NC} ${GREEN}stat /tmp/mas${NC}"
+    stat /tmp/mas/
+
+    # download tarball
+    echo -e "\n${BLUE}downloading tarball:${NC} ${GREEN}curl -sL ${URL}${NC}"
+    curl -sLO ${URL} && ls && echo -e "\nsuccessful curl" && mv mas-cli-${ARCH}-${OS}.tar.gz /tmp/mas/
+    echo -e "\n${BLUE}verify tarball exists:${NC} ${GREEN}ls /tmp/mas/${NC}"
+    ls /tmp/mas/
+
+    # untar the tarball
+    echo -e "\n${BLUE}decompress binary from tarball:${NC} ${GREEN}tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz${NC}"
+    # tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz && echo -e "\nuntared /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz"
+    tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz --directory=/tmp/mas && echo -e "\nuntared /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz"
+    ls /tmp/mas/
+
+    echo -e "\n\n ------------END INIT STUFF BEFORE MAS CLI -------------- \n\n"
 
     # This should display the help message
     /tmp/mas/mas-cli --help
+    /tmp/mas/mas-cli config generate
     /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
 
     # templates out the secrets object section of the config.yaml
