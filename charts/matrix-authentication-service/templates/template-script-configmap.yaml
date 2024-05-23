@@ -22,9 +22,9 @@ data:
     # install stuff
     echo -e "\n\n ------------INSTALL STUFF-------------- \n\n"
 
-    apt update
+    apt-get update
     echo -e "${BLUE}installing curl:${NC} ${GREEN}apk add curl${NC}"
-    apt install -y curl
+    apt-get install -y curl
     echo -e "\n\n ------------END INSTALL STUFF-------------- \n\n"
 
     # Create a directory and extract the archive in it
