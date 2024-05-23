@@ -198,6 +198,7 @@ spec:
         - name: templating-script
           configMap:
             name: {{ include "matrix-authentication-service.fullname" . }}-templating-script
+            defaultMode: 0755
 
         - name: initial-config
           secret:
