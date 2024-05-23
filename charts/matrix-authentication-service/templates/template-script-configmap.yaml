@@ -44,13 +44,18 @@ data:
 
     # untar the tarball
     echo -e "\n${BLUE}decompress binary from tarball:${NC} ${GREEN}tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz${NC}"
-    # tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz && echo -e "\nuntared /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz"
     tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz --directory=/tmp/mas && echo -e "\nuntared /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz"
+    echo -e "\n${BLUE}check the directory:${NC} ${GREEN}ls /tmp/mas/${NC}"
     ls /tmp/mas/
+
+    echo -e "\n${BLUE}run mas-cli help doc:${NC} ${GREEN}/tmp/mas/mas-cli --help${NC}"
+    chmod +x /tmp/mas/mas-cli
+
 
     echo -e "\n\n ------------END INIT STUFF BEFORE MAS CLI -------------- \n\n"
 
     # This should display the help message
+    echo -e "\n${BLUE}run mas-cli help doc:${NC} ${GREEN}/tmp/mas/mas-cli --help${NC}"
     /tmp/mas/mas-cli --help
     /tmp/mas/mas-cli config generate
     /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
