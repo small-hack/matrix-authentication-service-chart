@@ -63,7 +63,7 @@ spec:
 
         {{- if .Values.existingMasConfigSecret }}
         - name: cp-existing-config-to-data-dir
-          image: alpine:latest
+          image: debian:bookworm-slim
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -84,9 +84,7 @@ spec:
           imagePullPolicy: Always
           command:
             - /bin/sh
-            - -ec
-            - |
-              apk update && apk add yq-go && apk add curl && /scripts/templateconfig.sh
+            - /scripts/templateconfig.sh
           volumeMounts:
             - name: templating-script
               mountPath: /scripts
