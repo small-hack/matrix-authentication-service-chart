@@ -33,34 +33,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        {{- if .Values.postgresql.enabled }}
-        - name: postgresql-isready
-          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
-          command:
-            - "sh"
-            - "-c"
-            - "until pg_isready -h $PGHOST -U $PGUSER; do sleep 2; done"
-          env:
-            - name: PGHOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
-                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.hostname" . }}
-            - name: PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
-                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.user" . }}
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
-                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.password" . }}
-            {{- if or .Values.postgresql.sslmode .Values.externalDatabase.sslmode }}
-            {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
-            {{- end }}
-        {{- end }}
-
         {{- if .Values.existingMasConfigSecret }}
         - name: cp-existing-config-to-data-dir
           image: debian:bookworm-slim
@@ -81,7 +53,7 @@ spec:
         {{- else -}} {{/* if no existingMasConfigSecret was set */}}
         - name: add-secret-values-to-config
           image: debian:bookworm-slim
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
             - /scripts/templateconfig.sh
@@ -156,6 +128,33 @@ spec:
                   key: {{ .Values.mas.masClientSecret.secretKeys.client_secret }}
             {{- end }}
         {{- end }} {{/* end if not existingMasConfigSecret */}}
+        {{- if .Values.postgresql.enabled }}
+        - name: postgresql-isready
+          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          command:
+            - "sh"
+            - "-c"
+            - "until pg_isready -h $PGHOST -U $PGUSER; do sleep 2; done"
+          env:
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.hostname" . }}
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.user" . }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.password" . }}
+            {{- if or .Values.postgresql.sslmode .Values.externalDatabase.sslmode }}
+            {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
+            {{- end }}
+        {{- end }}
 
       containers:
         - name: {{ .Chart.Name }}
