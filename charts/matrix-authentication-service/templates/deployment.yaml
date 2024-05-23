@@ -86,7 +86,7 @@ spec:
             - /bin/sh
             - -ec
             - |
-              apk add yq-go && /scripts/templateconfig.sh
+              apk update && apk add yq-go && apk add curl && /scripts/templateconfig.sh
           volumeMounts:
             - name: templating-script
               mountPath: /scripts
