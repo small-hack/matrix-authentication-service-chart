@@ -55,10 +55,10 @@ data:
     echo -e "\n\n ------------END INIT STUFF BEFORE MAS CLI -------------- \n\n"
 
     # This should display the help message
-    echo -e "\n${BLUE}run mas-cli help doc:${NC} ${GREEN}/tmp/mas/mas-cli --help${NC}"
-    /tmp/mas/mas-cli --help
-    /tmp/mas/mas-cli config generate
-    /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
+    echo -e "\n${BLUE}run mas-cli help doc:${NC}${GREEN}sh /tmp/mas/mas-cli --help${NC}"
+    sh /tmp/mas/mas-cli --help
+    sh /tmp/mas/mas-cli config generate
+    sh /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
 
     # templates out the secrets object section of the config.yaml
     export SECRETS="yq '.secrets' /data/config-secrets.yaml"
