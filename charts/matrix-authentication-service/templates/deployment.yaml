@@ -80,7 +80,7 @@ spec:
               mountPath: /data
         {{- else -}} {{/* if no existingMasConfigSecret was set */}}
         - name: add-secret-values-to-config
-          image: "alpine:latest"
+          image: debian:bookworm-slim
           imagePullPolicy: Always
           command:
             - /bin/sh
