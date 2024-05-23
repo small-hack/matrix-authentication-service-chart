@@ -201,7 +201,7 @@ spec:
 
         - name: initial-config
           secret:
-            {{- if .Values.existingMasConfigSecret }}
+            {{ if .Values.existingMasConfigSecret }}
             secretName: {{ .Values.existingMasConfigSecret }}
             {{- else -}}
             secretName: {{ template "matrix-authentication-service.fullname" . }}-initial-config-secret
@@ -209,7 +209,7 @@ spec:
 
         - name: config
           persistentVolumeClaim:
-            {{- if .Values.configVolume.existingClaim }}
+            {{ if .Values.configVolume.existingClaim }}
             claimName: {{ .Values.configVolume.existingClaim }}
             {{- else -}}
             claimName: {{ include "matrix-authentication-service.fullname" . }}-config
