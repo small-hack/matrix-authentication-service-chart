@@ -86,7 +86,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - |
-              config generate > /keys/config-secrets.yaml
+              mas-cli config generate > /keys/config-secrets.yaml
 
           volumeMounts:
             - name: initial-config-keys-only
