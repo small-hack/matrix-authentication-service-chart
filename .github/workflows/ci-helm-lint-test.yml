@@ -55,4 +55,4 @@ jobs:
           helm install matrix matrix/matrix --values .github/matrix_values.yaml
 
           echo "installing matrix auth service"
-          ct install --target-branch ${{ github.event.repository.default_branch }} --helm-extra-set-args '--set=postgresql.volumePermissions.enabled=false --set=postgresql.primary.networkPolicy.enabled=false --set=syncv3.server=http://matrix-stack-synapse'
+          ct install --target-branch ${{ github.event.repository.default_branch }} --helm-extra-set-args '--set=postgresql.enabled=true --set=postgresql.volumePermissions.enabled=false --set=postgresql.primary.networkPolicy.enabled=false'
