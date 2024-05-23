@@ -89,38 +89,38 @@ spec:
             - name: ISSUER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mas.upstream_oauth2 }}
+                  name: {{ .Values.mas.upstream_oauth2.existingSecret }}
                   key: {{ .Values.mas.upstream_oauth2.secretKeys.issuer }}
             {{- end }} {{/* end oauth2 issuer */}}
             - name: CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mas.upstream_oauth2 }}
+                  name: {{ .Values.mas.upstream_oauth2.existingSecret }}
                   key: {{ .Values.mas.upstream_oauth2.secretKeys.client_id }}
             - name: CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mas.upstream_oauth2 }}
+                  name: {{ .Values.mas.upstream_oauth2.existingSecret }}
                   key: {{ .Values.mas.upstream_oauth2.secretKeys.client_secret}}
             {{- if .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint}}
             - name: AUTH_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mas.upstream_oauth2 }}
+                  name: {{ .Values.mas.upstream_oauth2.existingSecret }}
                   key: {{ .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint }}
             {{- end }} {{/* end auth endpoint */}}
             {{- if .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
             - name: TOKEN_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mas.upstream_oauth2 }}
+                  name: {{ .Values.mas.upstream_oauth2.existingSecret }}
                   key: {{ .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
             {{- end }} {{/* end token endpoint */}}
             {{- if .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
             - name: USERINFO_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mas.upstream_oauth2 }}
+                  name: {{ .Values.mas.upstream_oauth2.existingSecret }}
                   key: {{ .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
             {{- end }} {{/* user info endpoint */}}
             {{- end }} {{/* end check for oauth2 existing secret */}}
