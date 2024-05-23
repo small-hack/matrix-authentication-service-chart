@@ -48,7 +48,7 @@ data:
     echo -e "\n${BLUE}check the directory:${NC} ${GREEN}ls /tmp/mas/${NC}"
     ls /tmp/mas/
 
-    echo -e "\n${BLUE}run mas-cli help doc:${NC} ${GREEN}/tmp/mas/mas-cli --help${NC}"
+    echo -e "\n${BLUE}chown mas-cli:${NC} ${GREEN}chmod +x /tmp/mas/mas-cli${NC}"
     chmod +x /tmp/mas/mas-cli
 
 
