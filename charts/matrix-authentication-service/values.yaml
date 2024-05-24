@@ -256,6 +256,13 @@ existingMasConfigSecret: ""
 # this stands for Matrix Authentication Service and is for templating out the config.yaml
 # learn more about the config file here: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html
 mas:
+  database:
+    max_connections: 10
+    min_connections: 0
+    connect_timeout: 30
+    idle_timeout: 600
+    max_lifetime: 1800
+
   http:
     # -- Public URL base used when building absolute public URLs
     public_base: ""
@@ -307,7 +314,6 @@ mas:
           # key_file: /path/to/key.pem
           # password: <password to decrypt the key>
           # password_file: /path/to/password.txt
-
 
   masClientSecret:
     # -- use an existing secret for clients section of config.yaml for:
@@ -407,7 +413,6 @@ mas:
     password: password
     # -- Send emails by calling a local sendmail binary, only used if transport is sendmail
     command: /usr/sbin/sendmail
-
 
   # see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#captcha
   captcha:
