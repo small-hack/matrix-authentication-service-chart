@@ -159,7 +159,7 @@ postgresql:
         # -- password of matrix-authentication-service postgres user - ignored using exsitingSecret
         password: changeme
         # -- which port to use to connect to your database server
-        port: 5432
+        port: '5432'
         # -- name of the database
         database: mas
         # -- Name of existing secret to use for PostgreSQL credentials
@@ -213,7 +213,7 @@ externalDatabase:
   # -- password of matrix-authentication-service postgres user - ignored using exsitingSecret
   password: changeme
   # -- which port to use to connect to your database server
-  port: 5432
+  port: '5432'
   # -- hostname of db server. Can be left blank if using postgres subchart
   hostname: ""
   # -- name of the database to try and connect to
