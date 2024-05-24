@@ -292,10 +292,10 @@ mas:
         # List of addresses and ports to listen to
         binds:
           # First option: listen to the given address
-          - address: "[::]:8080"
+          # - address: "[::]:8080"
           # Second option: listen on the given host and port combination
-          # - host: localhost
-          #   port: 8081
+          - host: localhost
+            port: 8080
           # Third option: listen on the given UNIX socket
           # - socket: /tmp/mas.sock
           # Fourth option: grab an already open file descriptor given by the parent process

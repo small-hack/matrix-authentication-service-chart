@@ -83,7 +83,8 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.email.transport | string | `"blackhole"` | Default transport: don't send any emails, options: blackhole, smtp, sendmail, aws_ses (use AWS SESv2 API, via the AWS SDK, so the usual AWS environment variables are supported) |
 | mas.email.username | string | `"username"` | SMTP username. only used if transport is smtp |
 | mas.http.issuer | string | `""` | OIDC issuer advertised by the service. Defaults to `public_base` |
-| mas.http.listeners[0].binds[0].address | string | `"[::]:8080"` |  |
+| mas.http.listeners[0].binds[0].host | string | `"localhost"` |  |
+| mas.http.listeners[0].binds[0].port | int | `8080` |  |
 | mas.http.listeners[0].name | string | `"web"` |  |
 | mas.http.listeners[0].proxy_protocol | bool | `false` |  |
 | mas.http.listeners[0].resources[0].name | string | `"discovery"` |  |
