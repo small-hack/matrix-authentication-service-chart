@@ -62,7 +62,9 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | livenessProbe.enabled | bool | `false` | enable a liveness probe on the deployment |
 | livenessProbe.httpGet.path | string | `"/"` |  |
 | livenessProbe.httpGet.port | string | `"http"` |  |
-| mas.captcha.service | string | `nil` | Which service to use for CAPTCHA protection. Set to `null` (or `~`) to disable CAPTCHA protection. |
+| mas.captcha.secret_key | string | `""` | ignored if mas.captcha.service is ~ or null |
+| mas.captcha.service | string | `nil` | Which service to use for CAPTCHA protection. Set to `null` (or `~`) to disable CAPTCHA protection. options are: ~, null, recaptcha_v2 (google), cloudflare_turnstile, or hcaptcha. see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#captcha |
+| mas.captcha.site_key | string | `""` | ignored if mas.captcha.service is ~ or null |
 | mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"0000000000000000000SYNAPSE","client_secret":"exampletest"}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
 | mas.clients[0].client_auth_method | string | `"client_secret_basic"` | set to client_secret_basic. Other methods are possible, such as client_secret_post, but this is the easiest to set up. |
 | mas.clients[0].client_secret | string | `"exampletest"` | a shared secret used for the homeserver to authenticate |

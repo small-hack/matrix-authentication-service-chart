@@ -301,8 +301,8 @@ mas:
           # Fourth option: grab an already open file descriptor given by the parent process
           # This is useful when using systemd socket activation
           - fd: 1
-            # Kind of socket that was passed, defaults to tcp
-            kind: tcp # or unix
+            # Kind of socket that was passed, defaults to tcp, but can be unix
+            kind: tcp
         # Whether to enable the PROXY protocol on the listener
         proxy_protocol: false
 
@@ -414,26 +414,15 @@ mas:
     # -- Send emails by calling a local sendmail binary, only used if transport is sendmail
     command: /usr/sbin/sendmail
 
-  # see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#captcha
   captcha:
     # -- Which service to use for CAPTCHA protection. Set to `null` (or `~`) to
-    # disable CAPTCHA protection.
+    # disable CAPTCHA protection. options are: ~, null, recaptcha_v2 (google),
+    # cloudflare_turnstile, or hcaptcha. see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#captcha
     service: ~
-
-    # Use Google reCAPTCHA v2
-    #service: recaptcha_v2
-    #site_key: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-    #secret_key: "6LeIxAcTAAAAAGG"-vFI1TnRWxMZNFuojJ4WifJWe
-
-    # Use Cloudflare Turnstile
-    #service: cloudflare_turnstile
-    #site_key: "1x00000000000000000000AA"
-    #secret_key: "1x0000000000000000000000000000000AA"
-
-    # Use hCaptcha
-    #service: hcaptcha
-    #site_key: "10000000-ffff-ffff-ffff-000000000001"
-    #secret_key: "0x0000000000000000000000000000000000000000"
+    # -- ignored if mas.captcha.service is ~ or null
+    site_key: ""
+    # -- ignored if mas.captcha.service is ~ or null
+    secret_key: ""
 
   # see: https://matrix-org.github.io/matrix-authentication-service/setup/sso.html?highlight=ulid#general-configuration
   # and also see: https://matrix-org.github.io/matrix-authentication-service/setup/sso.html#keycloak
