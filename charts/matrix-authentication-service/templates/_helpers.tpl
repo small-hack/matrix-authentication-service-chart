@@ -101,13 +101,11 @@ Helper function to get postgres hostname secret key
 {{/*
 Helper function to get postgres port secret key
 */}}
-{{- define "matrix-authentication-service.postgresql.secretKeys.port" -}}
-{{- if and .Values.postgresql.enabled .Values.postgresql.global.postgresql.auth.existingSecret -}}
-{{- .Values.postgresql.global.postgresql.auth.secretKeys.port -}}
-{{- else if and .Values.externalDatabase.enabled .Values.externalDatabase.existingSecret -}}
-{{- .Values.externalDatabase.secretKeys.port -}}
-{{- else -}}
-{{- printf "port" }}
+{{- define "matrix-authentication-service.postgresql.port" -}}
+{{- if and .Values.postgresql.enabled -}}
+{{- .Values.postgresql.global.postgresql.auth.port -}}
+{{- else if .Values.externalDatabase.enabled -}}
+{{- .Values.externalDatabase.port -}}
 {{- end }}
 {{- end }}
 

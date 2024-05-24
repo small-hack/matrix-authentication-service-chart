@@ -141,10 +141,7 @@ spec:
                   name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
                   key: {{ include "matrix-authentication-service.postgresql.secretKeys.hostname" . }}
             - name: PGPORT
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
-                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.port" . }}
+              value: {{ include "matrix-authentication-service.postgresql.port" . }}
             - name: PGUSER
               valueFrom:
                 secretKeyRef:
