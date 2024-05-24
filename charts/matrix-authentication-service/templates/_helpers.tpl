@@ -173,7 +173,7 @@ postgres://{{ .Values.postgresql.global.postgresql.auth.username }}@{{ include "
 {{- end }}
 {{- if and .Values.externalDatabase.enabled .Values.externalDatabase.password -}}
 postgres://{{ .Values.externalDatabase.username }}:{{ .Values.externalDatabase.password }}@{{ .Values.externalDatabase.hostname }}:{{ .Values.externalDatabase.port }}/{{ .Values.externalDatabase.database }}
-{{- else -}}
+{{- else if and .Values.externalDatabase.enabled (not .Values.externalDatabase.password) -}}
 postgres://{{ .Values.externalDatabase.username }}@{{ .Values.externalDatabase.hostname }}:{{ .Values.externalDatabase.port }}/{{ .Values.externalDatabase.database }}?ssl=true&sslmode={{ .Values.externalDatabase.sslmode }}
 {{- end }}
 {{- end }}
