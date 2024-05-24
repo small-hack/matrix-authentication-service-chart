@@ -67,8 +67,11 @@ data:
     cp /initial/config.yaml /data/config.yaml
 
     # templates out the secrets object section of the config.yaml
-    export SECRETS="yq '.secrets' /data/config-secrets.yaml"
-    if [ `cat /data/config.yaml | yq .secrets` == "{}" ]; then
+    export SECRETS=`yq '.secrets' /data/config-secrets.yaml`
+    export EXISTING_SECRET=`cat /data/config.yaml | yq .secrets`
+    echo -e "\n${GREEN}echo EXISTING_SECRET variable${NC}"
+    echo -e "$EXISTING_SECRET"
+    if [ "$EXISTING_SECRET" == "{}" ] || [ "$EXISTING_SECRET" == "null" ]; then
         echo -e "\n${BLUE}updating to new secret keys${NC}"
         yq eval -i '.secrets = env(SECRETS)' /data/config.yaml
     else
