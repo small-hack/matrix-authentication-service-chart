@@ -294,15 +294,15 @@ mas:
           # First option: listen to the given address
           - address: "[::]:8080"
           # Second option: listen on the given host and port combination
-          - host: localhost
-            port: 8081
+          # - host: localhost
+          #   port: 8081
           # Third option: listen on the given UNIX socket
-          - socket: /tmp/mas.sock
+          # - socket: /tmp/mas.sock
           # Fourth option: grab an already open file descriptor given by the parent process
           # This is useful when using systemd socket activation
-          - fd: 1
-            # Kind of socket that was passed, defaults to tcp, but can be unix
-            kind: tcp
+          # - fd: 1
+          #   # Kind of socket that was passed, defaults to tcp, but can be unix
+          #   kind: tcp
         # Whether to enable the PROXY protocol on the listener
         proxy_protocol: false
 
