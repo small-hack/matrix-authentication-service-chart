@@ -166,15 +166,15 @@ Helper function to get postgres ssl mode
 Helper function to get a postgres connection string for the database, with all of the auth and SSL settings automatically applied
 */}}
 {{- define "matrix-authentication-service.postgresUri" -}}
-{{- if .Values.postgresql.enabled -}}
-postgres://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ include "matrix-authentication-service.postgresql.hostname" . }}/{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode}}{{ end }}
-{{- else -}}
-postgres://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ include "matrix-authentication-service.postgresql.hostname" . }}:{{ .Values.postgresql.port }}/{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode }}{{ end }}
+{{- if and .Values.postgresql.enabled .Values.postgresql.global.postgresql.auth.password -}}
+postgres://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ include "matrix-authentication-service.postgresql.hostname" . }}:{{ .Values.postgresql.global.postgresql.auth.port }}
+{{- else if and .Values.postgresql.enabled (not .Values.postgresql.global.postgresql.auth.password) -}}
+postgres://{{ .Values.postgresql.global.postgresql.auth.username }}@{{ include "matrix-authentication-service.postgresql.hostname" . }}:{{ .Values.postgresql.global.postgresql.auth.port }}{{ if .Values.postgresql.ssl }}/?ssl=true&sslmode={{ .Values.postgresql.sslMode }}{{ end }}
 {{- end }}
-{{- if .Values.externalDatabase.enabled -}}
-postgres://{{ .Values.externalDatabase.username }}:{{ .Values.externalDatabase.password }}@{{ .Values.externalDatabase.hostname }}/{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode}}{{ end }}
+{{- if and .Values.externalDatabase.enabled .Values.externalDatabase.password -}}
+postgres://{{ .Values.externalDatabase.username }}:{{ .Values.externalDatabase.password }}@{{ .Values.externalDatabase.hostname }}:{{ .Values.externalDatabase.port }}
 {{- else -}}
-postgres://{{ .Values.externalDatabase.username }}:{{ .Values.externalDatabase.password }}@{{ .Values.externalDatabase.hostname }}:{{ .Values.postgresql.port }}/{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode }}{{ end }}
+postgres://{{ .Values.externalDatabase.username }}@{{ .Values.externalDatabase.hostname }}:{{ .Values.externalDatabase.port }}/?ssl=true&sslmode={{ .Values.externalDatabase.sslmode }}
 {{- end }}
 {{- end }}
 
