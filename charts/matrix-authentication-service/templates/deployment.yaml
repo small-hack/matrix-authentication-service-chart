@@ -67,7 +67,7 @@ spec:
           imagePullPolicy: IfNotPresent
           command:
             - /bin/bash
-            - -ec
+            - -exc
             - /scripts/templateconfig.sh
           volumeMounts:
             - name: templating-script
