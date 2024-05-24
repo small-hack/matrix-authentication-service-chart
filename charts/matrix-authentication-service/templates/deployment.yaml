@@ -33,7 +33,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        {{- if .Values.existingMasConfigSecret }}
         - name: cp-existing-config-to-data-dir
           image: debian:bookworm-slim
           {{- with .Values.securityContext }}
@@ -50,7 +49,19 @@ spec:
               mountPath: "/initial"
             - name: config
               mountPath: /data
-        {{- else -}} {{/* if no existingMasConfigSecret was set */}}
+        {{- if not .Values.existingMasConfigSecret }}
+        - name: mas-cli-generate-config-secrets
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ['config', 'generate', '-o', '/data/config-secrets.yaml']
+          volumeMounts:
+            - name: config
+              mountPath: /data
+
         - name: add-secret-values-to-config
           image: debian:bookworm-slim
           imagePullPolicy: IfNotPresent
@@ -61,10 +72,6 @@ spec:
           volumeMounts:
             - name: templating-script
               mountPath: /scripts
-
-            - name: initial-config
-              mountPath: /initial
-
             - name: config
               mountPath: /data
           env:

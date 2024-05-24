@@ -5,19 +5,9 @@ metadata:
   name: {{ include "matrix-authentication-service.fullname" . }}-templating-script
 data:
   templateconfig.sh: |-
-    # quick script to template out some sensitive values for the
-    # matrix authentication service config.yaml file
-
-    # download the mas-cli and generate a config
-    ARCH=x86_64 # or aarch64
-    OS=linux # or macos
-    VERSION=latest
     BLUE='\033[1;34m'
     GREEN='\033[1;32m'
     NC='\033[0m'
-    # URL to the right archive
-    URL="https://github.com/matrix-org/matrix-authentication-service/releases/${VERSION}/download/mas-cli-${ARCH}-${OS}.tar.gz"
-    echo -e "URL is ${URL}"
 
     # install stuff
     echo -e "\n\n ------------INSTALL STUFF-------------- \n\n"
@@ -33,46 +23,13 @@ data:
 
     echo -e "\n\n ------------END INSTALL STUFF-------------- \n\n"
 
-    # Create a directory and extract the archive in it
-    echo -e "${BLUE}making the /tmp/mas directory:${NC} ${GREEN}mkdir -p /tmp/mas${NC}"
-    mkdir -p /tmp/mas && echo -e "\ncreated directory"
-    echo -e "\n${BLUE}stat /tmp/mas directory:${NC} ${GREEN}stat /tmp/mas${NC}"
-    stat /tmp/mas/
-
-    # download tarball
-    echo -e "\n${BLUE}downloading tarball:${NC} ${GREEN}curl -sL ${URL}${NC}"
-    curl -sLO ${URL} && echo -e "\nsuccessful curl" && mv mas-cli-${ARCH}-${OS}.tar.gz /tmp/mas/
-    echo -e "\n${BLUE}verify tarball exists:${NC} ${GREEN}ls -l /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz${NC}"
-    ls -l /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz
-
-    # untar the tarball
-    echo -e "\n${BLUE}decompress binary from tarball:${NC} ${GREEN}tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz${NC}"
-    tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz --directory=/tmp/mas && echo -e "\nuntared /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz"
-    echo -e "\n${BLUE}check the directory:${NC} ${GREEN}ls -l /tmp/mas/mas-cli${NC}"
-    ls -l /tmp/mas/mas-cli
-
-    echo -e "\n${BLUE}chmod mas-cli:${NC} ${GREEN}chmod +x /tmp/mas/mas-cli${NC}"
-    chmod +x /tmp/mas/mas-cli
-
-    # This should display the help message
-    echo -e "\n${BLUE}run mas-cli help to make sure its working:${NC}${GREEN}/tmp/mas/mas-cli --help${NC}"
-    /tmp/mas/mas-cli --help
-
-    echo -e "\n${BLUE}run mas-cli config generate:${NC}${GREEN}/tmp/mas/mas-cli config generate > /data/config-secrets.yaml${NC}"
-    mkdir -p /data
-    /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
-
-    # copy initial config file from kubernetes secret to persistent volume
-    echo -e "\n${BLUE}copying /initial/config.yaml to /data/config.yaml${NC}"
-    cp /initial/config.yaml /data/config.yaml
-
     # templates out the secrets object section of the config.yaml
     export SECRETS=`yq '.secrets' /data/config-secrets.yaml`
     export EXISTING_SECRET=`cat /data/config.yaml | yq .secrets`
     echo -e "\n${GREEN}echo EXISTING_SECRET variable${NC}"
     echo -e "$EXISTING_SECRET"
     if [ "$EXISTING_SECRET" == "{}" ] || [ "$EXISTING_SECRET" == "null" ]; then
-        echo -e "\n${BLUE}updating to new secret keys${NC}"
+        echo -e "\n${BLUE}updating new secret keys in config.yaml${NC}"
         yq eval -i '.secrets = env(SECRETS)' /data/config.yaml
     else
         echo -e "\n${BLUE}secrets object already exist, so we will not overwrite it${NC}"
@@ -80,7 +37,7 @@ data:
     rm /data/config-secrets.yaml || echo -e "\n${BLUE}no secret file to clean up, moving on...${NC}"
 
     # database section...
-    echo -e "\n${BLUE}Update postgresql URI${NC}"
+    echo -e "\n${BLUE}Update postgresql URI:${NC}${GREEN}$PG_URI${NC}"
     yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml
 
     # matrix section...
