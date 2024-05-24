@@ -33,37 +33,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        {{- if .Values.postgresql.enabled }}
-        - name: postgresql-isready
-          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
-          command:
-            - "sh"
-            - "-c"
-            - "until pg_isready -h $PGHOST -U $PGUSER; do sleep 2; done"
-          env:
-            - name: PGHOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
-                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.hostname" . }}
-            - name: PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
-                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.user" . }}
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
-                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.password" . }}
-            {{- if or .Values.postgresql.sslmode .Values.externalDatabase.sslmode }}
-            {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
-            {{- end }}
-        {{- end }}
-
-        {{- if .Values.existingMasConfigSecret }}
         - name: cp-existing-config-to-data-dir
-          image: alpine:latest
+          image: debian:bookworm-slim
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -78,41 +49,32 @@ spec:
               mountPath: "/initial"
             - name: config
               mountPath: /data
-        {{- else -}} {{/* if no existingMasConfigSecret was set */}}
-        - name: generate-secrets
+        {{- if not .Values.existingMasConfigSecret }}
+        - name: mas-cli-generate-config-secrets
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - |
-              config generate > /data/config-secrets.yaml
+          args: ['config', 'generate', '-o', '/data/config-secrets.yaml']
           volumeMounts:
             - name: config
               mountPath: /data
 
         - name: add-secret-values-to-config
-          image: "alpine:latest"
-          imagePullPolicy: Always
+          image: debian:bookworm-slim
+          imagePullPolicy: IfNotPresent
           command:
-            - /bin/sh
+            - /bin/bash
             - -ec
-            - |
-              apk add yq-go && /scripts/templateconfig.sh
+            - /scripts/templateconfig.sh
           volumeMounts:
             - name: templating-script
               mountPath: /scripts
-
-            - name: initial-config
-              mountPath: /initial
-
             - name: config
               mountPath: /data
           env:
-            - name: PG_URI
-              value: {{ include "matrix-authentication-service.postgresUri" . }}
             - name: MATRIX_SECRET
               value: {{ include "matrix-authentication-service.matrix.secretName" . }}
             - name: MATRIX_HOMESERVER
@@ -165,21 +127,75 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.mas.masClientSecret.existingSecret }}
                   key: {{ .Values.mas.masClientSecret.secretKeys.client_id }}
+
             - name: MAS_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.mas.masClientSecret.existingSecret }}
                   key: {{ .Values.mas.masClientSecret.secretKeys.client_secret }}
+            {{- end }}{{/* end check for existing mas client secrets */}}
+
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.hostname" . }}
+            - name: PGPORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.port" . }}
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.user" . }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.password" . }}
+            {{- if or .Values.postgresql.sslmode .Values.externalDatabase.sslmode }}
+            {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
             {{- end }}
         {{- end }} {{/* end if not existingMasConfigSecret */}}
+        {{- if .Values.postgresql.enabled }}
+        - name: postgresql-isready
+          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          command:
+            - "sh"
+            - "-c"
+            - "until pg_isready -h $PGHOST -U $PGUSER; do sleep 2; done"
+          env:
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.hostname" . }}
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.user" . }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.password" . }}
+            {{- if or .Values.postgresql.sslmode .Values.externalDatabase.sslmode }}
+            {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
+            {{- end }}
+        {{- end }}
 
       containers:
         - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ['server']
+          args: ['server']
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
@@ -212,10 +228,11 @@ spec:
         - name: templating-script
           configMap:
             name: {{ include "matrix-authentication-service.fullname" . }}-templating-script
+            defaultMode: 0755
 
         - name: initial-config
           secret:
-            {{- if .Values.existingMasConfigSecret }}
+            {{ if .Values.existingMasConfigSecret }}
             secretName: {{ .Values.existingMasConfigSecret }}
             {{- else -}}
             secretName: {{ template "matrix-authentication-service.fullname" . }}-initial-config-secret
@@ -223,7 +240,7 @@ spec:
 
         - name: config
           persistentVolumeClaim:
-            {{- if .Values.configVolume.existingClaim }}
+            {{ if .Values.configVolume.existingClaim }}
             claimName: {{ .Values.configVolume.existingClaim }}
             {{- else -}}
             claimName: {{ include "matrix-authentication-service.fullname" . }}-config

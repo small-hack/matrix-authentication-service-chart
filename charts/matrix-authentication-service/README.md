@@ -1,6 +1,6 @@
 # matrix-authentication-service
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
 
 A Helm chart for deploying the matrix authentication service on Kubernetes
 
@@ -34,7 +34,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | externalDatabase.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
 | externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
 | externalDatabase.password | string | `"changeme"` | password of matrix-authentication-service postgres user - ignored using exsitingSecret |
-| externalDatabase.port | int | `5432` | which port to use to connect to your database server |
+| externalDatabase.port | string | `"5432"` | which port to use to connect to your database server |
 | externalDatabase.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
 | externalDatabase.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
 | externalDatabase.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
@@ -62,9 +62,40 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | livenessProbe.enabled | bool | `false` | enable a liveness probe on the deployment |
 | livenessProbe.httpGet.path | string | `"/"` |  |
 | livenessProbe.httpGet.port | string | `"http"` |  |
-| mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"","client_secret":""}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
+| mas.captcha.secret_key | string | `""` | ignored if mas.captcha.service is ~ or null |
+| mas.captcha.service | string | `nil` | Which service to use for CAPTCHA protection. Set to `null` (or `~`) to disable CAPTCHA protection. options are: ~, null, recaptcha_v2 (google), cloudflare_turnstile, or hcaptcha. see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#captcha |
+| mas.captcha.site_key | string | `""` | ignored if mas.captcha.service is ~ or null |
+| mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"0000000000000000000SYNAPSE","client_secret":"exampletest"}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
 | mas.clients[0].client_auth_method | string | `"client_secret_basic"` | set to client_secret_basic. Other methods are possible, such as client_secret_post, but this is the easiest to set up. |
-| mas.clients[0].client_secret | string | `""` | a shared secret used for the homeserver to authenticate |
+| mas.clients[0].client_secret | string | `"exampletest"` | a shared secret used for the homeserver to authenticate |
+| mas.database.connect_timeout | int | `30` |  |
+| mas.database.idle_timeout | int | `600` |  |
+| mas.database.max_connections | int | `10` |  |
+| mas.database.max_lifetime | int | `1800` |  |
+| mas.database.min_connections | int | `0` |  |
+| mas.email.command | string | `"/usr/sbin/sendmail"` | Send emails by calling a local sendmail binary, only used if transport is sendmail |
+| mas.email.from | string | `"\"The almighty auth service\" <auth@example.com>"` | email.from |
+| mas.email.hostname | string | `"localhost"` | SMTP hostname. only used if transport is smtp |
+| mas.email.mode | string | `"plain"` | SMTP mode. options are plan, tls, or starttls. only used if transport is smtp |
+| mas.email.password | string | `"password"` | SMTP password. only used if transport is smtp |
+| mas.email.port | int | `587` | SMTP port. only used if transport is smtp |
+| mas.email.reply_to | string | `"\"No reply\" <no-reply@example.com>"` | email.reply_to |
+| mas.email.transport | string | `"blackhole"` | Default transport: don't send any emails, options: blackhole, smtp, sendmail, aws_ses (use AWS SESv2 API, via the AWS SDK, so the usual AWS environment variables are supported) |
+| mas.email.username | string | `"username"` | SMTP username. only used if transport is smtp |
+| mas.http.issuer | string | `""` | OIDC issuer advertised by the service. Defaults to `public_base` |
+| mas.http.listeners[0].binds[0].host | string | `"localhost"` |  |
+| mas.http.listeners[0].binds[0].port | int | `8080` |  |
+| mas.http.listeners[0].name | string | `"web"` |  |
+| mas.http.listeners[0].proxy_protocol | bool | `false` |  |
+| mas.http.listeners[0].resources[0].name | string | `"discovery"` |  |
+| mas.http.listeners[0].resources[1].name | string | `"human"` |  |
+| mas.http.listeners[0].resources[2].name | string | `"oauth"` |  |
+| mas.http.listeners[0].resources[3].name | string | `"compat"` |  |
+| mas.http.listeners[0].resources[4].name | string | `"graphql"` |  |
+| mas.http.listeners[0].resources[4].playground | bool | `true` |  |
+| mas.http.listeners[0].resources[5].name | string | `"assets"` |  |
+| mas.http.listeners[0].tls | object | `{}` | If set, makes the listener use TLS with the provided certificate and key. more info: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners |
+| mas.http.public_base | string | `"http://chart-example.local"` | Public URL base used when building absolute public URLs |
 | mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
 | mas.masClientSecret.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
 | mas.masClientSecret.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
@@ -73,6 +104,8 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.matrix.homeserver | string | `"localhost:8008"` | name of your matrix home server (synapse or dendrite) with port if needed |
 | mas.matrix.secret | string | `"test"` | a shared secret the service will use to call the homeserver admin API |
 | mas.matrix.secretKey | string | `"secret"` | name of the key in existing secret to grab matrix.secret from |
+| mas.passwords.enabled | bool | `false` | Whether to enable the password database. If disabled, users will only be able to log in using upstream OIDC providers |
+| mas.passwords.schemes | list | `[{"algorithm":"argon2id","version":1}]` | List of password hashing schemes being used ⚠️ Only change this if you know what you're doing. ignored if passwords.enabled is set to false |
 | mas.policy.data.admin_clients | list | `[]` | Client IDs which are allowed to ask for admin access with a client_credentials grant |
 | mas.policy.data.admin_users | list | `[]` | Users which are allowed to ask for admin access. If possible, use the can_request_admin flag on users instead. |
 | mas.policy.data.client_registration.allow_host_mismatch | bool | `true` | don't require URIs to be on the same host. default: false |
@@ -82,8 +115,8 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.policy.data.passwords.require_number | bool | `true` | require at least one number in a password. default: false |
 | mas.policy.data.passwords.require_uppercase | bool | `true` | require at least one uppercase character in a password. default: false |
 | mas.upstream_oauth2.existingSecret | string | `""` | use an existing k8s secret for upstream oauth2 client_id and client_secret |
-| mas.upstream_oauth2.providers[0] | object | `{"authorization_endpoint":"https://example.com/oauth2/authorize","brand_name":"zitadel","claims_imports":{"displayname":{"action":"suggest","template":"{{ user.name }}"},"email":{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"},"localpart":{"action":"require","template":"{{ user.preferred_username }}"},"subject":{"template":"{{ user.sub }}"}},"client_id":"","client_secret":"","human_name":"Example","id":"","issuer":"https://example.com/","pkce_method":"auto","scope":"openid email profile","token_endpoint_auth_method":"client_secret_basic"}` | A unique identifier for the provider Must be a valid ULID, and can be generated using online tools like: https://www.ulidtools.com |
-| mas.upstream_oauth2.providers[0].authorization_endpoint | string | `"https://example.com/oauth2/authorize"` | The provider authorization endpoint This takes precedence over the discovery mechanism |
+| mas.upstream_oauth2.providers[0] | object | `{"authorization_endpoint":"","brand_name":"zitadel","claims_imports":{"displayname":{"action":"suggest","template":"{{ user.name }}"},"email":{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"},"localpart":{"action":"require","template":"{{ user.preferred_username }}"},"subject":{"template":"{{ user.sub }}"}},"client_id":"","client_secret":"","discovery_mode":"oidc","human_name":"Example","id":"","issuer":"https://example.com/","jwks_uri":"","pkce_method":"auto","scope":"openid email profile","token_endpoint":"","token_endpoint_auth_method":"client_secret_basic"}` | A unique identifier for the provider Must be a valid ULID, and can be generated using online tools like: https://www.ulidtools.com |
+| mas.upstream_oauth2.providers[0].authorization_endpoint | string | `""` | The provider authorization endpoint, takes precedence over the discovery mechanism |
 | mas.upstream_oauth2.providers[0].brand_name | string | `"zitadel"` | A brand identifier for the provider, which will be used to display a logo on the login page. Values supported by the default template are:  - `apple`  - `google`  - `facebook`  - `github`  - `gitlab`  - `twitter` |
 | mas.upstream_oauth2.providers[0].claims_imports.displayname | object | `{"action":"suggest","template":"{{ user.name }}"}` | The display name is the user's display name. |
 | mas.upstream_oauth2.providers[0].claims_imports.email | object | `{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"}` | An email address to import. |
@@ -92,10 +125,13 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.upstream_oauth2.providers[0].claims_imports.subject | object | `{"template":"{{ user.sub }}"}` | The subject is an internal identifier used to link the user's provider identity to local accounts. By default it uses the `sub` claim as per the OIDC spec, which should fit most use cases. |
 | mas.upstream_oauth2.providers[0].client_id | string | `""` | The client ID to use to authenticate to the provider |
 | mas.upstream_oauth2.providers[0].client_secret | string | `""` | The client secret to use to authenticate to the provider This is only used by the `client_secret_post`, `client_secret_basic` and `client_secret_jwk` authentication methods |
+| mas.upstream_oauth2.providers[0].discovery_mode | string | `"oidc"` | How the provider configuration and endpoints should be discovered |
 | mas.upstream_oauth2.providers[0].human_name | string | `"Example"` | A human-readable name for the provider, which will be displayed on the login page |
 | mas.upstream_oauth2.providers[0].issuer | string | `"https://example.com/"` | The issuer URL, which will be used to discover the provider's configuration. If discovery is enabled, this *must* exactly match the `issuer` field advertised in `<issuer>/.well-known/openid-configuration`. |
+| mas.upstream_oauth2.providers[0].jwks_uri | string | `""` | The provider JWKS URI. takes precedence over the discovery mechanism |
 | mas.upstream_oauth2.providers[0].pkce_method | string | `"auto"` | Whether PKCE should be used during the authorization code flow. Possible values are:  - `auto`: use PKCE if the provider supports it (default)    Determined through discovery, and disabled if discovery is disabled  - `always`: always use PKCE (with the S256 method)  - `never`: never use PKCE |
 | mas.upstream_oauth2.providers[0].scope | string | `"openid email profile"` | The scopes to request from the provider In most cases, it should always include `openid` scope |
+| mas.upstream_oauth2.providers[0].token_endpoint | string | `""` | The provider token endpoint. takes precedence over the discovery mechanism |
 | mas.upstream_oauth2.providers[0].token_endpoint_auth_method | string | `"client_secret_basic"` | Which authentication method to use to authenticate to the provider Supported methods are:   - `none`   - `client_secret_basic`   - `client_secret_post`   - `client_secret_jwt`   - `private_key_jwt` (using the keys defined in the `secrets.keys` section) |
 | mas.upstream_oauth2.secretKeys.authorization_endpoint | string | `""` | key in secret with the authorization_endpoint if discovery is disabled |
 | mas.upstream_oauth2.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
@@ -113,7 +149,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | postgresql.global.postgresql.auth.database | string | `"mas"` | name of the database |
 | postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
 | postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix-authentication-service postgres user - ignored using exsitingSecret |
-| postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
+| postgresql.global.postgresql.auth.port | string | `"5432"` | which port to use to connect to your database server |
 | postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
 | postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
 | postgresql.global.postgresql.auth.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
