@@ -23,10 +23,10 @@ data:
     echo -e "\n\n ------------INSTALL STUFF-------------- \n\n"
 
     apt-get update
-    echo -e "${BLUE}installing curl:${NC} ${GREEN}apk add curl${NC}"
+    echo -e "${BLUE}installing curl:${NC} ${GREEN}apt-get install curl${NC}"
     apt-get install -y curl
 
-    echo -e "${BLUE}installing yq:${NC}"
+    echo -e "${BLUE}installing yq...${NC}"
     YQ_URL="https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"
     curl -L "${YQ_URL}" -o /usr/bin/yq && \
     chmod +x /usr/bin/yq
@@ -41,84 +41,79 @@ data:
 
     # download tarball
     echo -e "\n${BLUE}downloading tarball:${NC} ${GREEN}curl -sL ${URL}${NC}"
-    curl -sLO ${URL} && ls && echo -e "\nsuccessful curl" && mv mas-cli-${ARCH}-${OS}.tar.gz /tmp/mas/
-    echo -e "\n${BLUE}verify tarball exists:${NC} ${GREEN}ls /tmp/mas/${NC}"
-    ls /tmp/mas/
+    curl -sLO ${URL} && echo -e "\nsuccessful curl" && mv mas-cli-${ARCH}-${OS}.tar.gz /tmp/mas/
+    echo -e "\n${BLUE}verify tarball exists:${NC} ${GREEN}ls -l /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz${NC}"
+    ls -l /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz
 
     # untar the tarball
     echo -e "\n${BLUE}decompress binary from tarball:${NC} ${GREEN}tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz${NC}"
     tar xvf /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz --directory=/tmp/mas && echo -e "\nuntared /tmp/mas/mas-cli-${ARCH}-${OS}.tar.gz"
-    echo -e "\n${BLUE}check the directory:${NC} ${GREEN}ls /tmp/mas/${NC}"
-    ls /tmp/mas/
+    echo -e "\n${BLUE}check the directory:${NC} ${GREEN}ls -l /tmp/mas/mas-cli${NC}"
+    ls -l /tmp/mas/mas-cli
 
-    echo -e "\n${BLUE}chown mas-cli:${NC} ${GREEN}chmod +x /tmp/mas/mas-cli${NC}"
+    echo -e "\n${BLUE}chmod mas-cli:${NC} ${GREEN}chmod +x /tmp/mas/mas-cli${NC}"
     chmod +x /tmp/mas/mas-cli
 
-
-    echo -e "\n\n ------------END INIT STUFF BEFORE MAS CLI -------------- \n\n"
-
     # This should display the help message
-    echo -e "\n${BLUE}run mas-cli help doc:${NC}${GREEN}/tmp/mas/mas-cli --help${NC}"
+    echo -e "\n${BLUE}run mas-cli help to make sure its working:${NC}${GREEN}/tmp/mas/mas-cli --help${NC}"
     /tmp/mas/mas-cli --help
 
     echo -e "\n${BLUE}run mas-cli config generate:${NC}${GREEN}/tmp/mas/mas-cli config generate > /data/config-secrets.yaml${NC}"
     mkdir -p /data
     /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
-    yq /data/config-secrets.yaml
+
+    # copy initial config file from kubernetes secret to persistent volume
+    echo -e "\n${BLUE}copying /initial/config.yaml to /data/config.yaml${NC}"
+    cp /initial/config.yaml /data/config.yaml
 
     # templates out the secrets object section of the config.yaml
     export SECRETS="yq '.secrets' /data/config-secrets.yaml"
     if [ `cat /data/config.yaml | yq .secrets` == "{}" ]; then
-        echo "\nupdating to new secret keys"
+        echo -e "\n${BLUE}updating to new secret keys${NC}"
         yq eval -i '.secrets = env(SECRETS)' /data/config.yaml
     else
-        echo "\nsecrets object already exist, so we will not overwrite it"
+        echo -e "\n${BLUE}secrets object already exist, so we will not overwrite it${NC}"
     fi
-    rm /data/config-secrets.yaml || echo "\nno secret file to clean up, moving on..."
-
-    # copy initial config file from kubernetes secret to persistent volume
-    echo "\ncopying /initial/config.yaml to /data/config.yaml"
-    cp /initial/config.yaml /data/config.yaml
-
+    rm /data/config-secrets.yaml || echo -e "\n${BLUE}no secret file to clean up, moving on...${NC}"
 
     # database section...
-    echo "\nUpdate postgresql URI"
+    echo -e "\n${BLUE}Update postgresql URI${NC}"
     yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml
 
     # matrix section...
-    echo "\nUpdate matrix homserver, secret, and endpoint"
+    echo -e "\n${BLUE}Update matrix homserver, secret, and endpoint${NC}"
     yq eval -i '.matrix.homeserver = env(MATRIX_HOMESERVER)' /data/config.yaml && \
     yq eval -i '.matrix.secret = env(MATRIX_SECRET)' /data/config.yaml && \
     yq eval -i '.matrix.endpoint = env(MATRIX_ENDPOINT)' /data/config.yaml
 
     # upstream oauth2 section...
     {{- if .Values.mas.upstream_oauth2.existingSecret }}
-    echo "\n updating upstream_oauth2.providers.issuer, client_id, and client_secret"
+    echo -e "\n${BLUE}updating upstream_oauth2.providers.issuer, client_id, and client_secret${NC}"
     yq eval -i '.upstream_oauth2.providers[0].issuer = env(ISSUER)' /data/homeserver.yaml && \
     yq eval -i '.upstream_oauth2.providers[0].client_id = env(CLIENT_ID)' /data/homeserver.yaml && \
     yq eval -i '.upstream_oauth2.providers[0].client_secret = env(CLIENT_SECRET)' /data/homeserver.yaml
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint }}
-    echo "\nUpdating authorization_endpoint of config.yaml"
+    echo -e "\n${BLUE}Updating authorization_endpoint of config.yaml${NC}"
     yq eval -i '.upstream_oauth2.providers[0].authorization_endpoint = env(AUTH_ENDPOINT)' /data/homeserver.yaml
     {{- end }} {{/* end auth endpoint */}}
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
-    echo "\nUpdating token endpoint of config.yaml"
+    echo -e "\n${BLUE}Updating token endpoint of config.yaml${NC}"
     yq eval -i '.upstream_oauth2.providers[0].token_endpoint = env(TOKEN_ENDPOINT)' /data/homeserver.yaml
     {{- end }} {{/* end token endpoint */}}
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
-    echo "\nUpdating userinfo endpoint of config.yaml"
+    echo -e "\n${BLUE}Updating userinfo endpoint of config.yaml${NC}"
     yq eval -i '.upstream_oauth2.providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml
     {{- end }}
     {{- end }} {{/* end check for existing oauth2 secret */}}
 
     # finally, the clients section...
     {{- if .Values.mas.masClientSecret.existingSecret }}
-    echo "\nUpdating clients section of config.yaml"
+    echo -e "\n${BLUE}Updating clients section of config.yaml${NC}"
     yq eval -i '.clients[0].client_id = env(MAS_CLIENT_ID)' /data/homeserver.yaml && \
     yq eval -i '.clients[0].client_secret = env(MAS_CLIENT_SECRET)' /data/homeserver.yaml
     {{- end }} {{/* end mas client secret existingSecret */}}
 
-    echo "\nDone."
+    echo -e "\n${BLUE}Done.${NC}"
