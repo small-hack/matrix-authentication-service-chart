@@ -55,7 +55,8 @@ spec:
           image: debian:bookworm-slim
           imagePullPolicy: IfNotPresent
           command:
-            - /bin/sh
+            - /bin/bash
+            - -ec
             - /scripts/templateconfig.sh
           volumeMounts:
             - name: templating-script
