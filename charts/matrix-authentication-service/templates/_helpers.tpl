@@ -152,16 +152,7 @@ Helper function to get postgres password secret key
 Helper function to get postgres ssl mode
 */}}
 {{- define "matrix-authentication-service.postgresql.sslEnvVars" -}}
-{{- if and .Values.postgresql.enabled .Values.postgresql.sslmode -}}
-- name: PGSSLMODE
-  value: {{ .Values.postgresql.sslmode }}
-- name: PGSSLCERT
-  value: {{ .Values.postgresql.sslcert }}
-- name: PGSSLKEY
-  value: {{ .Values.postgresql.sslkey }}
-- name: PGSSLROOTCERT
-  value: {{ .Values.postgresql.sslrootcert }}
-{{- else if .Values.externalDatabase.enabled -}}
+{{- if and .Values.externalDatabase.enabled .Values.externalDatabase.sslmode -}}
 - name: PGSSLMODE
   value: {{ .Values.externalDatabase.sslmode }}
 - name: PGSSLCERT
@@ -170,6 +161,9 @@ Helper function to get postgres ssl mode
   value: {{ .Values.externalDatabase.sslkey }}
 - name: PGSSLROOTCERT
   value: {{ .Values.externalDatabase.sslrootcert }}
+{{- else -}}
+- name: PGSSLMODE
+  value: disable
 {{- end }}
 {{- end }}
 
