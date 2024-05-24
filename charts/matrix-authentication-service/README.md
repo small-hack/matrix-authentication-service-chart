@@ -95,7 +95,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.http.listeners[0].resources[4].playground | bool | `true` |  |
 | mas.http.listeners[0].resources[5].name | string | `"assets"` |  |
 | mas.http.listeners[0].tls | object | `{}` | If set, makes the listener use TLS with the provided certificate and key. more info: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners |
-| mas.http.public_base | string | `""` | Public URL base used when building absolute public URLs |
+| mas.http.public_base | string | `"http://chart-example.local"` | Public URL base used when building absolute public URLs |
 | mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
 | mas.masClientSecret.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
 | mas.masClientSecret.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
