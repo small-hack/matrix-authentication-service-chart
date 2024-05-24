@@ -62,9 +62,9 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | livenessProbe.enabled | bool | `false` | enable a liveness probe on the deployment |
 | livenessProbe.httpGet.path | string | `"/"` |  |
 | livenessProbe.httpGet.port | string | `"http"` |  |
-| mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"","client_secret":""}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
+| mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"0000000000000000000SYNAPSE","client_secret":"exampletest"}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
 | mas.clients[0].client_auth_method | string | `"client_secret_basic"` | set to client_secret_basic. Other methods are possible, such as client_secret_post, but this is the easiest to set up. |
-| mas.clients[0].client_secret | string | `""` | a shared secret used for the homeserver to authenticate |
+| mas.clients[0].client_secret | string | `"exampletest"` | a shared secret used for the homeserver to authenticate |
 | mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
 | mas.masClientSecret.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
 | mas.masClientSecret.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
