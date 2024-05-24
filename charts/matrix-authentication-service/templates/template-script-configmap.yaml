@@ -7,8 +7,6 @@ data:
   templateconfig.sh: |-
     # quick script to template out some sensitive values for the
     # matrix authentication service config.yaml file
-
-    # download the mas-cli and generate a config
     ARCH=x86_64 # or aarch64
     OS=linux # or macos
     VERSION=latest
@@ -53,9 +51,9 @@ data:
 
     # This should display the help message
     echo -e "\n${BLUE}run mas-cli help doc:${NC}${GREEN}sh /tmp/mas/mas-cli --help${NC}"
-    sh /tmp/mas/mas-cli --help
-    sh /tmp/mas/mas-cli config generate
-    sh /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
+    /tmp/mas/mas-cli --help
+    /tmp/mas/mas-cli config generate
+    /tmp/mas/mas-cli config generate > /data/config-secrets.yaml
 
     # templates out the secrets object section of the config.yaml
     export SECRETS="yq '.secrets' /data/config-secrets.yaml"
