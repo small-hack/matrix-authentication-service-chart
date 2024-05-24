@@ -5,7 +5,7 @@ A helm chart for deploying the [matrix-authentication-service](https://github.co
 
 ## TLDR
 
-Read through the [parameters](./charts/matrix-authentication-service-chart/README.md) and modify them locally before installing the chart:
+Read through the [parameters](./charts/matrix-authentication-service/README.md) and modify them locally before installing the chart:
 
 ```bash
 # add the helm repo locally
