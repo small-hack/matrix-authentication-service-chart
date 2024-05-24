@@ -163,22 +163,6 @@ Helper function to get postgres ssl mode
 {{- end }}
 
 {{/*
-Helper function to get a postgres connection string for the database, with all of the auth and SSL settings automatically applied
-*/}}
-{{- define "matrix-authentication-service.postgresUri" -}}
-{{- if and .Values.postgresql.enabled .Values.postgresql.global.postgresql.auth.password -}}
-postgres://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ include "matrix-authentication-service.postgresql.hostname" . }}:{{ .Values.postgresql.global.postgresql.auth.port }}/{{ .Values.postgresql.global.postgresql.auth.database }}
-{{- else if and .Values.postgresql.enabled (not .Values.postgresql.global.postgresql.auth.password) -}}
-postgres://{{ .Values.postgresql.global.postgresql.auth.username }}@{{ include "matrix-authentication-service.postgresql.hostname" . }}:{{ .Values.postgresql.global.postgresql.auth.port }}{{ if .Values.postgresql.ssl }}/{{ .Values.postgresql.global.postgresql.auth.database }}?ssl=true&sslmode={{ .Values.postgresql.sslMode }}{{ end }}
-{{- end }}
-{{- if and .Values.externalDatabase.enabled .Values.externalDatabase.password -}}
-postgres://{{ .Values.externalDatabase.username }}:{{ .Values.externalDatabase.password }}@{{ .Values.externalDatabase.hostname }}:{{ .Values.externalDatabase.port }}/{{ .Values.externalDatabase.database }}
-{{- else if and .Values.externalDatabase.enabled (not .Values.externalDatabase.password) -}}
-postgres://{{ .Values.externalDatabase.username }}@{{ .Values.externalDatabase.hostname }}:{{ .Values.externalDatabase.port }}/{{ .Values.externalDatabase.database }}?ssl=true&sslmode={{ .Values.externalDatabase.sslmode }}
-{{- end }}
-{{- end }}
-
-{{/*
 Helper function to get the matrix secret?
 */}}
 {{- define "matrix-authentication-service.matrix.secretName" -}}

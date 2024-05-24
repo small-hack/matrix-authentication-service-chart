@@ -37,6 +37,11 @@ data:
     rm /data/config-secrets.yaml || echo -e "\n${BLUE}no secret file to clean up, moving on...${NC}"
 
     # database section...
+    if [ -n "$PGPASSWORD" ]; then
+        export PG_URI="postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}"
+    else
+        export PG_URI="postgresql://${PGUSER}@${PGHOST}:${PGPORT}/${PGDATABASE}?ssl=true"
+    fi
     echo -e "\n${BLUE}Update postgresql URI:${NC}${GREEN}$PG_URI${NC}"
     yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml
 
@@ -49,31 +54,33 @@ data:
     # upstream oauth2 section...
     {{- if .Values.mas.upstream_oauth2.existingSecret }}
     echo -e "\n${BLUE}updating upstream_oauth2.providers.issuer, client_id, and client_secret${NC}"
-    yq eval -i '.upstream_oauth2.providers[0].issuer = env(ISSUER)' /data/homeserver.yaml && \
-    yq eval -i '.upstream_oauth2.providers[0].client_id = env(CLIENT_ID)' /data/homeserver.yaml && \
-    yq eval -i '.upstream_oauth2.providers[0].client_secret = env(CLIENT_SECRET)' /data/homeserver.yaml
+    yq eval -i '.upstream_oauth2.providers[0].issuer = env(ISSUER)' /data/config.yaml && \
+    yq eval -i '.upstream_oauth2.providers[0].client_id = env(CLIENT_ID)' /data/config.yaml && \
+    yq eval -i '.upstream_oauth2.providers[0].client_secret = env(CLIENT_SECRET)' /data/config.yaml
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.authorization_endpoint }}
     echo -e "\n${BLUE}Updating authorization_endpoint of config.yaml${NC}"
-    yq eval -i '.upstream_oauth2.providers[0].authorization_endpoint = env(AUTH_ENDPOINT)' /data/homeserver.yaml
+    yq eval -i '.upstream_oauth2.providers[0].authorization_endpoint = env(AUTH_ENDPOINT)' /data/config.yaml
     {{- end }} {{/* end auth endpoint */}}
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.token_endpoint }}
     echo -e "\n${BLUE}Updating token endpoint of config.yaml${NC}"
-    yq eval -i '.upstream_oauth2.providers[0].token_endpoint = env(TOKEN_ENDPOINT)' /data/homeserver.yaml
+    yq eval -i '.upstream_oauth2.providers[0].token_endpoint = env(TOKEN_ENDPOINT)' /data/config.yaml
     {{- end }} {{/* end token endpoint */}}
 
     {{- if .Values.mas.upstream_oauth2.secretKeys.userinfo_endpoint }}
     echo -e "\n${BLUE}Updating userinfo endpoint of config.yaml${NC}"
-    yq eval -i '.upstream_oauth2.providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml
+    yq eval -i '.upstream_oauth2.providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/config.yaml
     {{- end }}
     {{- end }} {{/* end check for existing oauth2 secret */}}
 
     # finally, the clients section...
     {{- if .Values.mas.masClientSecret.existingSecret }}
     echo -e "\n${BLUE}Updating clients section of config.yaml${NC}"
-    yq eval -i '.clients[0].client_id = env(MAS_CLIENT_ID)' /data/homeserver.yaml && \
-    yq eval -i '.clients[0].client_secret = env(MAS_CLIENT_SECRET)' /data/homeserver.yaml
+    yq eval -i '.clients[0].client_id = env(MAS_CLIENT_ID)' /data/config.yaml && \
+    yq eval -i '.clients[0].client_secret = env(MAS_CLIENT_SECRET)' /data/config.yaml
     {{- end }} {{/* end mas client secret existingSecret */}}
+
+    cat /data/config.yaml | yq
 
     echo -e "\n${BLUE}Done.${NC}"

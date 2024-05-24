@@ -75,8 +75,6 @@ spec:
             - name: config
               mountPath: /data
           env:
-            - name: PG_URI
-              value: {{ include "matrix-authentication-service.postgresUri" . }}
             - name: MATRIX_SECRET
               value: {{ include "matrix-authentication-service.matrix.secretName" . }}
             - name: MATRIX_HOMESERVER
@@ -129,11 +127,36 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.mas.masClientSecret.existingSecret }}
                   key: {{ .Values.mas.masClientSecret.secretKeys.client_id }}
+
             - name: MAS_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.mas.masClientSecret.existingSecret }}
                   key: {{ .Values.mas.masClientSecret.secretKeys.client_secret }}
+            {{- end }}{{/* end check for existing mas client secrets */}}
+
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.hostname" . }}
+            - name: PGPORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.port" . }}
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.user" . }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.postgresql.secretName" . }}
+                  key: {{ include "matrix-authentication-service.postgresql.secretKeys.password" . }}
+            {{- if or .Values.postgresql.sslmode .Values.externalDatabase.sslmode }}
+            {{- include "matrix-authentication-service.postgresql.sslEnvVars" . | nindent 12 }}
             {{- end }}
         {{- end }} {{/* end if not existingMasConfigSecret */}}
         {{- if .Values.postgresql.enabled }}
