@@ -170,6 +170,9 @@ Helper function to get postgres ssl mode
   value: {{ .Values.externalDatabase.sslkey }}
 - name: PGSSLROOTCERT
   value: {{ .Values.externalDatabase.sslrootcert }}
+{{- else -}}
+- name: PGSSLMODE
+  value: disable
 {{- end }}
 {{- end }}
 
