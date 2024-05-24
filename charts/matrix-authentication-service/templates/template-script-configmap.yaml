@@ -37,14 +37,12 @@ data:
     rm /data/config-secrets.yaml || echo -e "\n${BLUE}no secret file to clean up, moving on...${NC}"
 
     # database section...
-    echo -e "\n${GREEN}echo PGSSLMODE variable${NC}"
-    echo -e "---------------$PGSSLMODE---------------"
     if [ -z "$PGSSLMODE" ]; then
         export PG_URI="postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}"
     else
-        export PG_URI="postgresql://${PGUSER}@${PGHOST}:${PGPORT}/${PGDATABASE}?ssl=true"
+        export PG_URI="postgresql://${PGUSER}@${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=${PGSSLMODE}&sslkey=${PGSSLKEY}&sslcert=${PGSSLCERT}&sslrootcert=${PGSSLROOTCERT}"
     fi
-    echo -e "\n${BLUE}Update postgresql URI:${NC}${GREEN}$PG_URI${NC}"
+    echo -e "\n${BLUE}Update postgresql URI${NC}: ${GREEN}$PG_URI${NC}"
     yq eval -i '.database.uri = env(PG_URI)' /data/config.yaml
 
     # matrix section...
