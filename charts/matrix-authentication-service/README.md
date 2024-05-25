@@ -1,6 +1,6 @@
 # matrix-authentication-service
 
-![Version: 0.5.3](https://img.shields.io/badge/Version-0.5.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
+![Version: 0.5.4](https://img.shields.io/badge/Version-0.5.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
 
 A Helm chart for deploying the matrix authentication service on Kubernetes
 
@@ -68,11 +68,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"0000000000000000000SYNAPSE","client_secret":"exampletest"}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
 | mas.clients[0].client_auth_method | string | `"client_secret_basic"` | set to client_secret_basic. Other methods are possible, such as client_secret_post, but this is the easiest to set up. |
 | mas.clients[0].client_secret | string | `"exampletest"` | a shared secret used for the homeserver to authenticate |
-| mas.database.connect_timeout | int | `30` |  |
-| mas.database.idle_timeout | int | `600` |  |
-| mas.database.max_connections | int | `10` |  |
-| mas.database.max_lifetime | int | `1800` |  |
-| mas.database.min_connections | int | `0` |  |
+| mas.database.uri | string | `""` | specify a specific database uri to connect with |
 | mas.email.command | string | `"/usr/sbin/sendmail"` | Send emails by calling a local sendmail binary, only used if transport is sendmail |
 | mas.email.from | string | `"\"The almighty auth service\" <auth@example.com>"` | email.from |
 | mas.email.hostname | string | `"localhost"` | SMTP hostname. only used if transport is smtp |
