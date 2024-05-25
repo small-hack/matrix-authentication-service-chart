@@ -257,11 +257,14 @@ existingMasConfigSecret: ""
 # learn more about the config file here: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html
 mas:
   database:
-    max_connections: 10
-    min_connections: 0
-    connect_timeout: 30
-    idle_timeout: 600
-    max_lifetime: 1800
+    # -- specify a specific database uri to connect with
+    uri: ""
+  # optional database parameters if you don't want us to template this out for you
+  # connect_timeout: 30
+  # max_connections: 10
+  # min_connections: 0
+  # idle_timeout: 600
+  # max_lifetime: 1800
 
   http:
     # -- Public URL base used when building absolute public URLs
