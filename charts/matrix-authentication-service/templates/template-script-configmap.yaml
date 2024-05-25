@@ -56,6 +56,7 @@ data:
     # upstream oauth2 section...
     {{- if .Values.mas.upstream_oauth2.existingSecret }}
     echo -e "\n${BLUE}updating upstream_oauth2.providers.issuer, client_id, and client_secret${NC}"
+    yq eval -i '.upstream_oauth2.providers[0].id = env(PROVIDER_ID)' /data/config.yaml && \
     yq eval -i '.upstream_oauth2.providers[0].issuer = env(ISSUER)' /data/config.yaml && \
     yq eval -i '.upstream_oauth2.providers[0].client_id = env(CLIENT_ID)' /data/config.yaml && \
     yq eval -i '.upstream_oauth2.providers[0].client_secret = env(CLIENT_SECRET)' /data/config.yaml

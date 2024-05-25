@@ -435,6 +435,8 @@ mas:
     # -- use an existing k8s secret for upstream oauth2 client_id and client_secret
     existingSecret: ""
     secretKeys:
+      # -- key in secret with the provider id
+      id: ""
       # -- key in secret with the issuer
       issuer: "issuer"
       # -- key in secret with the client_id
