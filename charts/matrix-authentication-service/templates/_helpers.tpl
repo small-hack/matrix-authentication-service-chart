@@ -168,12 +168,20 @@ Helper function to get postgres ssl mode
 {{- end }}
 
 {{/*
-Helper function to get the matrix secret?
+Helper function to get the matrix secret
 */}}
 {{- define "matrix-authentication-service.matrix.secretName" -}}
 {{- if .Values.mas.matrix.existingSecret -}}
 {{ .Values.mas.matrix.existingSecret }}
 {{- else -}}
 {{ template "matrix-authentication-service.fullname" . }}-matrix-secret
+{{- end }}
+{{- end }}
+
+{{- define "matrix-authentication-service.matrix.secretKey" -}}
+{{- if .Values.mas.matrix.existingSecret -}}
+{{ .Values.mas.matrix.secretKey }}
+{{- else -}}
+{{- printf "secret" }}
 {{- end }}
 {{- end }}
