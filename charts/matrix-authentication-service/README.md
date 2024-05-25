@@ -1,6 +1,6 @@
 # matrix-authentication-service
 
-![Version: 0.5.5](https://img.shields.io/badge/Version-0.5.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
+![Version: 0.5.6](https://img.shields.io/badge/Version-0.5.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
 
 A Helm chart for deploying the matrix authentication service on Kubernetes
 
@@ -132,6 +132,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.upstream_oauth2.secretKeys.authorization_endpoint | string | `""` | key in secret with the authorization_endpoint if discovery is disabled |
 | mas.upstream_oauth2.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
 | mas.upstream_oauth2.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
+| mas.upstream_oauth2.secretKeys.id | string | `""` | key in secret with the provider id |
 | mas.upstream_oauth2.secretKeys.issuer | string | `"issuer"` | key in secret with the issuer |
 | mas.upstream_oauth2.secretKeys.token_endpoint | string | `""` | key in secret with the token_endpoint if discovery is disabled |
 | mas.upstream_oauth2.secretKeys.userinfo_endpoint | string | `""` | key in secret with the userinfo_endpoint if discovery is disabled |
