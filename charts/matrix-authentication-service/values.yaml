@@ -267,12 +267,13 @@ mas:
   # idle_timeout: 600
   # max_lifetime: 1800
 
+  # https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#http
   http:
     # -- Public URL base used when building absolute public URLs
-    public_base: "http://chart-example.local"
+    public_base: ""
     # -- OIDC issuer advertised by the service. Defaults to `public_base`
     issuer: ""
-    # List of HTTP listeners, see below
+    # -- List of [HTTP listeners](https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners)
     listeners:
       # The name of the listener, used in logs and metrics
       - name: web
@@ -289,9 +290,9 @@ mas:
           # Serve the GraphQL API used by the frontend,
           # and optionally the GraphQL playground
           - name: graphql
-            playground: true
+            # playground: true
           # Serve the given folder on the /assets/ path
-          - name: assets
+          # - name: assets
           #   path: ./share/assets/
         # List of addresses and ports to listen to
         binds:
