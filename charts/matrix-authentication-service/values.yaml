@@ -289,8 +289,8 @@ mas:
           - name: compat
           # Serve the GraphQL API used by the frontend,
           # and optionally the GraphQL playground
-          - name: graphql
-            # playground: true
+          # - name: graphql
+          #   playground: true
           # Serve the given folder on the /assets/ path
           # - name: assets
           #   path: ./share/assets/
@@ -368,22 +368,22 @@ mas:
       #  - 01H8PKNWKKRPCBW4YGH1RWV279
 
       # Dynamic Client Registration
-      client_registration:
+      client_registration: {}
         # -- don't require URIs to be on the same host. default: false
-        allow_host_mismatch: true
+        # allow_host_mismatch: true
         # -- allow non-SSL and localhost URIs. default: false
-        allow_insecure_uris: true
+        # allow_insecure_uris: true
 
       # Registration using passwords
-      passwords:
+      passwords: {}
         # -- minimum length of a password. default: 0
-        min_length: 16
+        # min_length: 16
         # -- require at least one lowercase character in a password. default: false
-        require_lowercase: true
+        # require_lowercase: true
         # -- require at least one uppercase character in a password. default: false
-        require_uppercase: true
+        # require_uppercase: true
         # -- require at least one number in a password. default: false
-        require_number: true
+        # require_number: true
 
   # see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#passwords
   passwords:
@@ -392,9 +392,9 @@ mas:
     enabled: false
 
     # -- List of password hashing schemes being used ⚠️ Only change this if you know what you're doing. ignored if passwords.enabled is set to false
-    schemes:
-      - version: 1
-        algorithm: argon2id
+    # schemes:
+    #   - version: 1
+    #     algorithm: argon2id
 
   # see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#email
   email:

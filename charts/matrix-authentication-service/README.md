@@ -1,6 +1,6 @@
 # matrix-authentication-service
 
-![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
+![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
 
 A Helm chart for deploying the matrix authentication service on Kubernetes
 
@@ -79,7 +79,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.email.transport | string | `"blackhole"` | Default transport: don't send any emails, options: blackhole, smtp, sendmail, aws_ses (use AWS SESv2 API, via the AWS SDK, so the usual AWS environment variables are supported) |
 | mas.email.username | string | `"username"` | SMTP username. only used if transport is smtp |
 | mas.http.issuer | string | `""` | OIDC issuer advertised by the service. Defaults to `public_base` |
-| mas.http.listeners | list | `[{"binds":[{"host":"localhost","port":8080}],"name":"web","proxy_protocol":false,"resources":[{"name":"discovery"},{"name":"human"},{"name":"oauth"},{"name":"compat"},{"name":"graphql"}],"tls":{}}]` | List of [HTTP listeners](https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners) |
+| mas.http.listeners | list | `[{"binds":[{"host":"localhost","port":8080}],"name":"web","proxy_protocol":false,"resources":[{"name":"discovery"},{"name":"human"},{"name":"oauth"},{"name":"compat"}],"tls":{}}]` | List of [HTTP listeners](https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners) |
 | mas.http.listeners[0].tls | object | `{}` | If set, makes the listener use TLS with the provided certificate and key. more info: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners |
 | mas.http.public_base | string | `""` | Public URL base used when building absolute public URLs |
 | mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
@@ -91,7 +91,6 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.matrix.secret | string | `"test"` | a shared secret the service will use to call the homeserver admin API |
 | mas.matrix.secretKey | string | `"secret"` | name of the key in existing secret to grab matrix.secret from |
 | mas.passwords.enabled | bool | `false` | Whether to enable the password database. If disabled, users will only be able to log in using upstream OIDC providers |
-| mas.passwords.schemes | list | `[{"algorithm":"argon2id","version":1}]` | List of password hashing schemes being used ⚠️ Only change this if you know what you're doing. ignored if passwords.enabled is set to false |
 | mas.policy.data.admin_clients | list | `[]` | Client IDs which are allowed to ask for admin access with a client_credentials grant |
 | mas.policy.data.admin_users | list | `[]` | Users which are allowed to ask for admin access. If possible, use the can_request_admin flag on users instead. |
 | mas.policy.data.client_registration.allow_host_mismatch | bool | `true` | don't require URIs to be on the same host. default: false |
