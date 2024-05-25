@@ -76,7 +76,10 @@ spec:
               mountPath: /data
           env:
             - name: MATRIX_SECRET
-              value: {{ include "matrix-authentication-service.matrix.secretName" . }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-authentication-service.matrix.secretName" . }}
+                  key: {{ include "matrix-authentication-service.matrix.secretKey" . }}
             - name: MATRIX_HOMESERVER
               value: {{ .Values.mas.matrix.homeserver }}
             - name: MATRIX_ENDPOINT
