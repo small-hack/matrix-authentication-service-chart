@@ -40,6 +40,8 @@ externalDatabase:
 
 **NOTE**: You can only use `externalDatabase.enabled=True` *OR* `postgresql.enabled=True`. You cannot use both. You must pick one. If you're still using Bitnami postgresql, but not the one that is bundled as a subchart to this one, you want to use the `externalDatabase` section.
 
+**TLS/SSL NOTE**: TLS cannot be enabled for database connections yet due to [matrix-org/matrix-authentication-service:#2799](https://github.com/matrix-org/matrix-authentication-service/issues/2799)
+
 ## Config.yaml
 
 Matrix Authentication Service requires a [`config.yaml`](https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html) to function. You can set it up by either using the values under `mas`, or you can provide your own complete config file via an existing Kubernetes Secret.
@@ -60,3 +62,5 @@ You can also do it an argument to `helm install` with `--set=existingMasConfigSe
 
 ## Status
 This chart was developed for use with the [small-hack/matrix-chart](https://github.com/small-hack/matrix-chart). We're still testing this chart. Feel free to open PRs and Issues if you see anything broken or want a feature.
+
+If the official repo deploys a chart, and it doesn't meet our security needs, we'll submit PRs till it does and when it's in a good state, you can expect this chart to be publicly archived.

@@ -199,6 +199,7 @@ externalDatabase:
   # optional SSL parameters for postgresql, if using your own db instead of the subchart
   # ref: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
   # -- sslmode to use, example: verify-full
+  # NOTE: SSL not yet supported due to https://github.com/matrix-org/matrix-authentication-service/issues/2799
   sslmode: ""
   # make sure any paths here are reflected in extraVolumes and extraVolumeMounts
   # -- optional: tls/ssl root cert for postgresql connections

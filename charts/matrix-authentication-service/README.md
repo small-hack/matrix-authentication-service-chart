@@ -1,6 +1,6 @@
 # matrix-authentication-service
 
-![Version: 0.5.4](https://img.shields.io/badge/Version-0.5.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
+![Version: 0.5.5](https://img.shields.io/badge/Version-0.5.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
 
 A Helm chart for deploying the matrix authentication service on Kubernetes
 
@@ -42,7 +42,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | externalDatabase.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
 | externalDatabase.sslcert | string | `""` | optional: tls/ssl cert for postgresql connections |
 | externalDatabase.sslkey | string | `""` | optional: tls/ssl key for postgresql connections |
-| externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
+| externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full NOTE: SSL not yet supported due to https://github.com/matrix-org/matrix-authentication-service/issues/2799 |
 | externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
 | externalDatabase.username | string | `"mas"` | username of matrix-authentication-service postgres user |
 | extraVolumeMounts | list | `[]` |  |
