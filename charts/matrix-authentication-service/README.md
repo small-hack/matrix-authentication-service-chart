@@ -1,6 +1,6 @@
 # matrix-authentication-service
 
-![Version: 0.5.7](https://img.shields.io/badge/Version-0.5.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
+![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
 
 A Helm chart for deploying the matrix authentication service on Kubernetes
 
@@ -79,19 +79,9 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | mas.email.transport | string | `"blackhole"` | Default transport: don't send any emails, options: blackhole, smtp, sendmail, aws_ses (use AWS SESv2 API, via the AWS SDK, so the usual AWS environment variables are supported) |
 | mas.email.username | string | `"username"` | SMTP username. only used if transport is smtp |
 | mas.http.issuer | string | `""` | OIDC issuer advertised by the service. Defaults to `public_base` |
-| mas.http.listeners[0].binds[0].host | string | `"localhost"` |  |
-| mas.http.listeners[0].binds[0].port | int | `8080` |  |
-| mas.http.listeners[0].name | string | `"web"` |  |
-| mas.http.listeners[0].proxy_protocol | bool | `false` |  |
-| mas.http.listeners[0].resources[0].name | string | `"discovery"` |  |
-| mas.http.listeners[0].resources[1].name | string | `"human"` |  |
-| mas.http.listeners[0].resources[2].name | string | `"oauth"` |  |
-| mas.http.listeners[0].resources[3].name | string | `"compat"` |  |
-| mas.http.listeners[0].resources[4].name | string | `"graphql"` |  |
-| mas.http.listeners[0].resources[4].playground | bool | `true` |  |
-| mas.http.listeners[0].resources[5].name | string | `"assets"` |  |
+| mas.http.listeners | list | `[{"binds":[{"host":"localhost","port":8080}],"name":"web","proxy_protocol":false,"resources":[{"name":"discovery"},{"name":"human"},{"name":"oauth"},{"name":"compat"},{"name":"graphql"}],"tls":{}}]` | List of [HTTP listeners](https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners) |
 | mas.http.listeners[0].tls | object | `{}` | If set, makes the listener use TLS with the provided certificate and key. more info: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners |
-| mas.http.public_base | string | `"http://chart-example.local"` | Public URL base used when building absolute public URLs |
+| mas.http.public_base | string | `""` | Public URL base used when building absolute public URLs |
 | mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
 | mas.masClientSecret.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
 | mas.masClientSecret.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
