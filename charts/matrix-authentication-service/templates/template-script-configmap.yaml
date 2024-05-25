@@ -38,7 +38,7 @@ data:
 
     {{- if not .Values.mas.database.uri }}
     # database section...
-    if [ -z "$PGSSLMODE" ]; then
+    if [ -z "$PGSSLMODE" ] || [ "$PGSSLMODE" == "disable" ]; then
         export PG_URI="postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}"
     else
         export PG_URI="postgresql://${PGUSER}@${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=${PGSSLMODE}"
