@@ -1,6 +1,6 @@
 # matrix-authentication-service
 
-![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
+![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
 
 A Helm chart for deploying the matrix authentication service on Kubernetes
 
@@ -52,9 +52,9 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | image.repository | string | `"ghcr.io/matrix-org/matrix-authentication-service"` |  |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` |  |
-| ingress.annotations | object | `{}` |  |
-| ingress.className | string | `""` |  |
-| ingress.enabled | bool | `false` |  |
+| ingress.annotations | object | `{}` | annotations for ingress resource |
+| ingress.className | string | `""` | className for ingress. Most people set this to "nginx" |
+| ingress.enabled | bool | `false` | enable ingress to reach the matrix authentication service outside the cluster |
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
@@ -155,7 +155,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | readinessProbe.httpGet.path | string | `"/"` |  |
 | readinessProbe.httpGet.port | string | `"http"` |  |
 | replicaCount | int | `1` |  |
-| resources | object | `{}` |  |
+| resources | object | `{}` | resources allocated to the kubernetes pod |
 | securityContext | object | `{}` |  |
 | service.annotations | object | `{}` | annotations for your service |
 | service.port | int | `80` | Port of service |

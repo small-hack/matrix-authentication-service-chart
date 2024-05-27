@@ -32,16 +32,16 @@ spec:
           - path: {{ .path }}
             pathType: {{ .pathType }}
             backend:
+              {{- if hasKey . "backend" }}{{/* if backend was provided */}}
+              {{- with .backend }}
+              {{- toYaml . | nindent 15 }}
+              {{- end }}
+              {{- else -}}{{/* else if no backend was provided */}}
               service:
-                {{- if hasKey . "backend" }}
-                name: {{ .backend.service.name }}
-                port:
-                  number: {{ .backend.service.port.number }}
-                {{- else -}}
                 name: {{ $fullName }}
                 port:
                   number: {{ $svcPort }}
-                {{- end }}
+              {{- end }}
           {{- end }}
     {{- end }}
 {{- end }}
