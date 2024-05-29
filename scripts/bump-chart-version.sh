@@ -6,7 +6,7 @@ set -euo pipefail
 
 update_type="$1"
 
-version=$(grep "^version:" "charts/matrix/Chart.yaml" | awk '{print $2}')
+version=$(grep "^version:" "./charts/matrix-authentication-service/Chart.yaml" | awk '{print $2}')
 
 if [[ ! $version ]]; then
   echo "No valid version was found"
@@ -29,4 +29,4 @@ else
 fi
 
 echo "Bumping version for matrix chart from $version to $major.$minor.$patch"
-sed -i "s/^version:.*/version: ${major}.${minor}.${patch}/g" "charts/matrix/Chart.yaml"
+sed -i "s/^version:.*/version: ${major}.${minor}.${patch}/g" "charts/matrix-authentication-service/Chart.yaml"
