@@ -61,6 +61,8 @@ You can also do it an argument to `helm install` with `--set=existingMasConfigSe
 
 
 ## Status
-This chart was developed for use with the [small-hack/matrix-chart](https://github.com/small-hack/matrix-chart). We're still testing this chart. Feel free to open PRs and Issues if you see anything broken or want a feature.
+This chart was developed for use with the [small-hack/matrix-chart](https://github.com/small-hack/matrix-chart), but can be used independently. Feel free to open PRs and Issues if you see anything broken or want a feature.
 
-If the official repo deploys a chart, and it doesn't meet our security needs, we'll submit PRs till it does and when it's in a good state, you can expect this chart to be publicly archived.
+It's sub-charts are kept up-to-date by [renovatebot](https://github.com/renovatebot/renovate).
+
+If the official repo deploys a chart, and it doesn't meet our security needs, we'll submit PRs till it does and when it's in a good state, you can expect this chart to be publicly archived with a link to the official chart.
