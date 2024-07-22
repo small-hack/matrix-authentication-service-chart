@@ -3,6 +3,24 @@ entries:
   matrix-authentication-service:
   - apiVersion: v2
     appVersion: sha-206d45b
+    created: "2024-07-22T09:26:09.841261957Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 15.5.4
+    description: A Helm chart for deploying the matrix authentication service on Kubernetes
+    digest: b5e707f1500ea067c6a51183711d6a5159284358da25b8f2a2c229d5ab8c705f
+    maintainers:
+    - name: jessebot
+      url: https://github.com/jessebot
+    name: matrix-authentication-service
+    type: application
+    urls:
+    - https://github.com/small-hack/matrix-authentication-service-chart/releases/download/matrix-authentication-service-0.8.2/matrix-authentication-service-0.8.2.tgz
+    version: 0.8.2
+  - apiVersion: v2
+    appVersion: sha-206d45b
     created: "2024-06-09T10:16:59.881816432Z"
     dependencies:
     - condition: postgresql.enabled
@@ -469,4 +487,4 @@ entries:
     urls:
     - https://github.com/jessebot/matrix-authentication-service-chart/releases/download/matrix-authentication-service-0.1.0/matrix-authentication-service-0.1.0.tgz
     version: 0.1.0
-generated: "2024-06-09T10:16:59.88198086Z"
+generated: "2024-07-22T09:26:09.841505792Z"
