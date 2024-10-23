@@ -15,7 +15,7 @@
     "packageRules": [
       {
         "matchManagers": ["github-actions"],
-        "matchUpdateTypes": ["patch","minor"],
+        "matchUpdateTypes": ["patch", "minor"],
         "automerge": true
       },
       {
