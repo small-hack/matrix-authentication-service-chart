@@ -49,7 +49,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | extravolumes | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy. if image.tag is set to "latest", set to "Always" |
-| image.repository | string | `"ghcr.io/matrix-org/matrix-authentication-service"` |  |
+| image.repository | string | `"ghcr.io/element-hq/matrix-authentication-service"` |  |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` | annotations for ingress resource |
