@@ -185,7 +185,7 @@ postgresql:
     # If using an external Postgres server, make sure to configure the database
     # ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md
     initdb:
-      scriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
+      scriptsConfigMap: '{{ template "postgresql.fullname" . }}-postgresql-initdb'
 
     podSecurityContext:
       enabled: true
