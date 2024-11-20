@@ -63,7 +63,7 @@ spec:
               mountPath: /data
 
         - name: add-secret-values-to-config
-          image: debian:bookworm-slim
+          image: mikefarah/yq:4
           imagePullPolicy: IfNotPresent
           command:
             - /bin/bash
