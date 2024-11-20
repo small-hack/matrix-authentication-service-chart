@@ -25,7 +25,7 @@ version: 1.1.0
 # we use the commit hash right now, but this should change from matrix-org to element-hq
 # and hopefully be properly tagged down the line
 # renovate: image=ghcr.io/matrix-org/matrix-authentication-service
-appVersion: "sha-206d45b"
+appVersion: 0.12.0
 
 dependencies:
   - name: postgresql
