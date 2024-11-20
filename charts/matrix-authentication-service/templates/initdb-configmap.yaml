@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-postgresql-initdb
+  name: {{ template "matrix-authentication-service.fullname" . }}-postgresql-initdb
   labels:
   {{ include "matrix-authentication-service.labels" . | nindent 4}}
 data:
