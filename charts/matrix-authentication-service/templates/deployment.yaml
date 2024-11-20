@@ -66,8 +66,8 @@ spec:
           image: mikefarah/yq:4
           imagePullPolicy: IfNotPresent
           command:
-            - /bin/bash
-            - -exc
+            - /bin/sh
+            - '-exc'
             - /scripts/templateconfig.sh
           volumeMounts:
             - name: templating-script
