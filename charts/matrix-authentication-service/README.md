@@ -1,6 +1,6 @@
 # matrix-authentication-service
 
-![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-206d45b](https://img.shields.io/badge/AppVersion-sha--206d45b-informational?style=flat-square)
+![Version: 1.2.0](https://img.shields.io/badge/Version-1.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.12.0](https://img.shields.io/badge/AppVersion-0.12.0-informational?style=flat-square)
 
 A Helm chart for deploying the matrix authentication service on Kubernetes
 
@@ -49,7 +49,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | extravolumes | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy. if image.tag is set to "latest", set to "Always" |
-| image.repository | string | `"ghcr.io/matrix-org/matrix-authentication-service"` |  |
+| image.repository | string | `"ghcr.io/element-hq/matrix-authentication-service"` |  |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` | annotations for ingress resource |
@@ -138,7 +138,7 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix-authentication-service to connect to db |
 | postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix-authentication-service to connect to db |
 | postgresql.global.postgresql.auth.username | string | `"mas"` | username of matrix-authentication-service postgres user |
-| postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ template \"postgresql.fullname\" . }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/element-hq/synapse/blob/master/docs/postgres.md |
 | postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
 | postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
