@@ -28,7 +28,7 @@ jobs:
           helm repo add matrix https://small-hack.github.io/matrix-chart
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.1
+        uses: helm/chart-testing-action@v2.7.0
 
       - name: Run chart-testing (list-changed)
         id: list-changed
