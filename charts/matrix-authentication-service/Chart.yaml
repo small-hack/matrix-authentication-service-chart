@@ -15,7 +15,7 @@ type: application
 # The chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 1.5.1
+version: 1.6.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -25,7 +25,7 @@ version: 1.5.1
 # we use the commit hash right now, but this should change from matrix-org to element-hq
 # and hopefully be properly tagged down the line
 # renovate: image=ghcr.io/element-hq/matrix-authentication-service
-appVersion: 0.15.0
+appVersion: 0.16.0
 
 dependencies:
   - name: postgresql
