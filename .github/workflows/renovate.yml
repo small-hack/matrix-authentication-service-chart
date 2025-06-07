@@ -1,5 +1,6 @@
 name: Renovate
 on:
+  workflow_dispatch:
   schedule:
     # string has to be quoted. This should be every hour.
     - cron: '0 * * * *'
