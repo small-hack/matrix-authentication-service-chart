@@ -63,17 +63,21 @@ spec:
               mountPath: /data
 
         - name: add-secret-values-to-config
-          image: debian:bookworm-slim
+          image: mikefarah/yq:4
           imagePullPolicy: IfNotPresent
           command:
-            - /bin/bash
-            - -exc
+            - /bin/sh
+            - '-exc'
             - /scripts/templateconfig.sh
           volumeMounts:
             - name: templating-script
               mountPath: /scripts
             - name: config
               mountPath: /data
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: MATRIX_SECRET
               valueFrom:
