@@ -39,7 +39,7 @@
             "matchManagers": ["helm-values", "regex"],
             "postUpgradeTasks": {
                 "commands": [
-                    "bash scripts/bump-chart-version.sh '{{{updateType}}}'"
+                    "scripts/bump-chart-version.sh '{{{updateType}}}'"
                 ],
                 "fileFilters": ["**/Chart.yaml"]
             }
