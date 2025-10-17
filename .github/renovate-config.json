@@ -2,7 +2,7 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "onboarding": false,
     "username": "renovate-release",
-    "gitAuthor": "Jesse Renovate Bot <jessebot@linux.com>",
+    "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
     "platform": "github",
     "repositories": [
         "small-hack/matrix-authentication-service-chart"
