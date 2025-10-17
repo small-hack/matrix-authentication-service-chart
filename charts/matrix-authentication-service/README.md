@@ -28,6 +28,8 @@ A Helm chart for deploying the matrix authentication service on Kubernetes
 | configVolume.existingClaim | string | `""` | name of an existing persistent volume claim to use for matrix-authentication-service config. If provided, ignores mas parameter map |
 | configVolume.storage | string | `"500Mi"` | storage capacity for creating a persistent volume |
 | configVolume.storageClassName | string | `"default"` | name of storage class for the persistent volume |
+| deploymentAnnotations | object | `{}` |  |
+| deploymentLabels | object | `{}` |  |
 | existingMasConfigSecret | string | `""` | Existing Kubernetes Secret for entire matrix authentication service `config.yaml` file. If set, everything under the mas section of the values.yaml is ignored. |
 | externalDatabase.database | string | `"mas"` | name of the database to try and connect to |
 | externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
