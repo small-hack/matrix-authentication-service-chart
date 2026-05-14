@@ -3,6 +3,8 @@
 This repo has now moved to:
 https://codeberg.org/small-hack/matrix-authentication-service-chart
 
+Please open all Issues and PRs there instead.
+
 ## No AI
 
 Do not use this repo with or for any sort of AI. No LLMs are permitted to ingest this repo. You may not use this repo to train anything.
