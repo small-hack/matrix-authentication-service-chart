@@ -1,3 +1,12 @@
+# Notice of migration
+
+This repo has now moved to:
+https://codeberg.org/small-hack/matrix-authentication-service-chart
+
+## No AI
+
+Do not use this repo with or for any sort of AI. No LLMs are permitted to ingest this repo. You may not use this repo to train anything.
+
 ## Matrix Authentication Service Helm chart
 <a href="https://github.com/small-hack/matrix-authentication-service-chart/releases"><img src="https://img.shields.io/github/v/release/small-hack/matrix-authentication-service-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
